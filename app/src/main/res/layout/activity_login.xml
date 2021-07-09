@@ -12,7 +12,6 @@
         android:layout_centerInParent="true"
         android:layout_centerVertical="false"
         android:elevation="10dp"
-        app:cardBackgroundColor="#E6FFFFFF"
         app:cardCornerRadius="10dp"
         app:strokeColor="#E62196F3"
         app:strokeWidth="1dp">
