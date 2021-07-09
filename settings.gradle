@@ -1,2 +1,2 @@
-rootProject.name = "NotificationReplyer"
 include ':app'
+rootProject.name = "NotificationReplyer"

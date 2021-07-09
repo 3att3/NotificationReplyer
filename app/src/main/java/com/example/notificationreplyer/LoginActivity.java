@@ -1,7 +1,5 @@
 package com.example.notificationreplyer;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +7,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
         addTextChangedListeners();
 
         register.setOnClickListener(view -> {
-            startActivity(new Intent(getApplicationContext(),RegisterActivity.class));
+            finish();
         });
 
         loginButton.setOnClickListener(view -> {
@@ -70,10 +70,13 @@ public class LoginActivity extends AppCompatActivity {
                                     throw task.getException();
                                 } catch(FirebaseAuthInvalidUserException e) { // Εμφάνιση toast για διάφορα exceptions
                                     StaticMethods.showMotionToast(activity,"Oops, problem!","Connection Issues.", MotionToast.TOAST_WARNING);
+                                    System.out.println("alex   ---: error1: " + e);
                                 } catch(FirebaseAuthInvalidCredentialsException e) {
                                     StaticMethods.showMotionToast(activity, "Oops, problem!","Wrong Email/Password.",MotionToast.TOAST_WARNING);
+                                    System.out.println("alex   ---: error1: " + e);
                                 } catch (Exception e) {
                                     StaticMethods.showMotionToast(activity,"Oops, problem!","Connection Issues.",MotionToast.TOAST_WARNING);
+                                    System.out.println("alex   ---: error1: " + e);
                                 }
                             }
                         });

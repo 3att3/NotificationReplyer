@@ -15,7 +15,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.robj.notificationhelperlibrary.utils.NotificationUtils;
 
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 

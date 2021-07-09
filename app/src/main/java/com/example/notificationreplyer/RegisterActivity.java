@@ -1,7 +1,5 @@
 package com.example.notificationreplyer;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +7,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -43,6 +43,11 @@ public class RegisterActivity extends AppCompatActivity {
         addTextChangedListeners();
         activity = this;
         mAuth = FirebaseAuth.getInstance();
+        firebaseUser = mAuth.getCurrentUser();
+        if (firebaseUser!= null) {
+            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+            finish();
+        }
         ref = FirebaseDatabase.getInstance().getReference("students");
         registerButton.setOnClickListener(view -> {
             username = editTextUsername.getText().toString().trim();
@@ -73,8 +78,8 @@ public class RegisterActivity extends AppCompatActivity {
                             String uid = FirebaseAuth.getInstance().getUid();
                             if (uid != null) {
                                 // Δημιουργία νέου node στην βάση με τα στοιχεία του μαθητή
-                                ref.child(uid).child("Username").setValue(username);
-                                ref.child(uid).child("Email").setValue(email);
+                                /*ref.child(uid).child("Username").setValue(username);
+                                ref.child(uid).child("Email").setValue(email);*/
 
                                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                         .setDisplayName(username).build();
@@ -103,6 +108,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 StaticMethods.showMotionToast(activity,"Oops, problem!","Invalid Email address",MotionToast.TOAST_WARNING);
                             } catch(Exception e) {
                                 StaticMethods.showMotionToast(activity,"Oops, problem!","Sign up failed, try again",MotionToast.TOAST_WARNING);
+                                System.out.println("alex   ---: error1: " + e);
                             }
                         }
                     }); // Έναρξη δημιουργίας του χρήστη στην firebase
@@ -111,7 +117,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         login.setOnClickListener(view -> {
-            finish();
+            startActivity(new Intent(getApplicationContext(),LoginActivity.class));
         });
 
     }
