@@ -3,15 +3,9 @@ package com.example.notificationreplyer.NotificationPack;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.os.IBinder;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
-
-import com.example.notificationreplyer.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
