@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.NotificationReplyer">
+        android:theme="@style/Theme.NotificationReplier">
         <activity
             android:name=".LoginActivity"
             android:parentActivityName=".RegisterActivity"/>

@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">NotificationReplyer</string>
+    <string name="app_name">NotificationReplier</string>
+    <string name="enableNotificationAccess">In order for the app to work properly, you need to enable notification access.</string>
+    <string name="enableNotificationAccessInstractions">Press the \"Open Settings\" button, locate this app on the list shown and grant the Notification access</string>
 </resources>
