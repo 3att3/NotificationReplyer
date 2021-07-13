@@ -2,17 +2,24 @@ package com.example.notificationreplyer;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Space;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,10 +30,11 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     FirebaseUser currentUser;
     private TextView textViewLoggedOrNot, tvMainWelcome, tvMdlMat1;
-    private Button btnMdlMatProceed, btnMdlMatBack;
+    private Button btnMdlMatProceed, btnMdlMatBack, btnBottomMatOpenWeb;
     private Space spaceMdlMatHorizontal1;
+    private ImageView ivOpenWebArea;
 
-    MaterialCardView matCVMidl;
+    MaterialCardView matCVMidl, matCVBottom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,20 +42,26 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mAuth = FirebaseAuth.getInstance();
+
         textViewLoggedOrNot = findViewById(R.id.textViewLoggedOrNot);
         tvMdlMat1 = findViewById(R.id.tvMdlMat1);
+
         matCVMidl = findViewById(R.id.matCVMidl);
+        matCVBottom = findViewById(R.id.matCVBottom);
+
         btnMdlMatProceed = findViewById(R.id.btnMdlMatProceed);
         btnMdlMatBack = findViewById(R.id.btnMdlMatBack);
+        btnBottomMatOpenWeb = findViewById(R.id.btnBottomMatOpenWeb);
 
         spaceMdlMatHorizontal1 = findViewById(R.id.spaceMdlMatHorizontal1);
+
+        ivOpenWebArea = findViewById(R.id.ivOpenWebArea);
 
 
 
         ShPref shPref = new ShPref(this);
 
         Boolean isOpenFirstTime = shPref.getOpenFirstTime();
-        System.out.println("alex99   ---: isOpenFirstTime: " + isOpenFirstTime);
         if (!isOpenFirstTime){
             // show user first welcome message with extra data
             matCVMidl.dispatchWindowVisibilityChanged(View.VISIBLE);
@@ -57,11 +71,11 @@ public class MainActivity extends AppCompatActivity {
             btnMdlMatProceed.setText("Proceed");
         }
         else{
-            matCVMidl.dispatchWindowVisibilityChanged(View.INVISIBLE);
+            matCVMidl.setVisibility(View.INVISIBLE);
         }
 
 
-        // Buttons on click
+        // On click listeners
 
         btnMdlMatProceed.setOnClickListener(v -> {
 
@@ -87,6 +101,20 @@ public class MainActivity extends AppCompatActivity {
             spaceMdlMatHorizontal1.setVisibility(View.GONE);
             btnMdlMatProceed.setText("Proceed");
         });
+
+        btnBottomMatOpenWeb.setOnClickListener(v -> {
+            String url = "http://www.amazon.com"; // maybe add a website
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        });
+
+        ivOpenWebArea.setOnClickListener(v -> {
+
+            showInfoDialog("Windows App",
+                    "In order for the replyable notifications to show in your windows computer, a new application is needed. \n" +
+                            "You can find our Windows application at our website by pressing the button \"Open Website\"");
+
+        });
+
     }
 
     @Override
@@ -126,11 +154,96 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected (MenuItem item) {
         if (item.getItemId() == R.id.action_settings) {
-            Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+            Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // show alerts
+
+    private void showSuccessDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialogTheme);
+        View view = LayoutInflater.from(MainActivity.this).inflate(
+                R.layout.layout_success_dialog,
+                (ConstraintLayout) findViewById(R.id.layoutDialogContainer)
+        );
+        builder.setView(view);
+        ((TextView) view.findViewById(R.id.textTitle)).setText("Title Success"); //or  .getResources().getString(R.id....)
+        ((TextView) view.findViewById(R.id.textMessage)).setText("Message success");
+        ((Button) view.findViewById(R.id.buttonAction)).setText("okay");
+        ((ImageView) view.findViewById(R.id.imageIcon)).setImageResource(R.drawable.ic_baseline_done_24);
+
+        final AlertDialog alertDialog = builder.create();
+
+        view.findViewById(R.id.buttonAction).setOnClickListener(v -> {
+            alertDialog.dismiss();
+        });
+
+        if (alertDialog.getWindow() != null) {
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        }
+
+        alertDialog.show();
+
+    }
+
+    private void showWarningDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialogTheme);
+        View view = LayoutInflater.from(MainActivity.this).inflate(
+                R.layout.layout_warning_dialog,
+                (ConstraintLayout) findViewById(R.id.layoutDialogContainer)
+        );
+        builder.setView(view);
+        ((TextView) view.findViewById(R.id.textTitle)).setText("Title Success"); //or  .getResources().getString(R.id....)
+        ((TextView) view.findViewById(R.id.textMessage)).setText("Message success");
+        ((Button) view.findViewById(R.id.buttonYes)).setText("yes");
+        ((Button) view.findViewById(R.id.buttonNo)).setText("no");
+        ((ImageView) view.findViewById(R.id.imageIcon)).setImageResource(R.drawable.ic_baseline_warning_24);
+
+        final AlertDialog alertDialog = builder.create();
+
+        view.findViewById(R.id.buttonYes).setOnClickListener(v -> {
+            alertDialog.dismiss();
+            Toast.makeText(this, "Button Yes was pressed", Toast.LENGTH_SHORT).show();
+        });
+
+        view.findViewById(R.id.buttonNo).setOnClickListener(v -> {
+            alertDialog.dismiss();
+            Toast.makeText(this, "Button NO was pressed", Toast.LENGTH_SHORT).show();
+        });
+
+        if (alertDialog.getWindow() != null) {
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        }
+
+        alertDialog.show();
+    }
+
+    private void showInfoDialog(String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialogTheme);
+        View view = LayoutInflater.from(MainActivity.this).inflate(
+                R.layout.layout_info_dialog,
+                (ConstraintLayout) findViewById(R.id.layoutDialogContainer)
+        );
+        builder.setView(view);
+        ((TextView) view.findViewById(R.id.textTitle)).setText(title); //or  .getResources().getString(R.id....)
+        ((TextView) view.findViewById(R.id.textMessage)).setText(message);
+        ((Button) view.findViewById(R.id.buttonAction)).setText("Ok");
+        ((ImageView) view.findViewById(R.id.imageIcon)).setImageResource(R.drawable.ic_baseline_info_24);
+
+        final AlertDialog alertDialog = builder.create();
+
+        view.findViewById(R.id.buttonAction).setOnClickListener(v -> {
+            alertDialog.dismiss();
+        });
+
+        if (alertDialog.getWindow() != null) {
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        }
+
+        alertDialog.show();
     }
 
 }

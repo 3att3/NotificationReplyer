@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -183,5 +184,16 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+        if (keyCode == KeyEvent.KEYCODE_BACK ) {
+            // do something on back.
+            this.finishAffinity();
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
 
 }

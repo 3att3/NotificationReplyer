@@ -16,10 +16,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NotificationReplier">
+        <activity android:name=".SettingsActivity"></activity>
         <activity
             android:name=".LoginActivity"
-            android:parentActivityName=".RegisterActivity"/>
-        <activity android:name=".MainActivity"/>
+            android:parentActivityName=".RegisterActivity" />
+        <activity android:name=".MainActivity" />
         <activity android:name=".RegisterActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,7 +38,6 @@
             </intent-filter>
         </service>
         <service android:name=".YourService" />
-
     </application>
 
 </manifest>

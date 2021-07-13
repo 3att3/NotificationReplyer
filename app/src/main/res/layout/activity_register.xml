@@ -21,7 +21,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:strokeColor="#E62196F3"
+            app:strokeColor="@color/color_OutLine"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -152,9 +152,9 @@
                     android:id="@+id/button_register"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="#2196F3"
                     android:elevation="5dp"
                     android:text="Sign Up"
+                    android:background="@drawable/button_neutral_background"
                     android:textAllCaps="false"
                     android:textColor="#FFFFFF"
                     android:textSize="22sp"
@@ -182,7 +182,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Sign in!"
-                        android:textColor="#2175F3" />
+                        android:textColor="@color/color_OutLine" />
                 </LinearLayout>
 
 
