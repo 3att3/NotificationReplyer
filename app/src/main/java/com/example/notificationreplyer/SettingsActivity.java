@@ -117,7 +117,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this, R.style.AlertDialogTheme);
         View view = LayoutInflater.from(SettingsActivity.this).inflate(
-                R.layout.layout_warning_dialog,
+                R.layout.layout_interactive_warning_dialog,
                 (ConstraintLayout) findViewById(R.id.layoutDialogContainer)
         );
         builder.setView(view);
@@ -130,7 +130,7 @@ public class SettingsActivity extends AppCompatActivity {
         interactiveAlertDialog = builder.create();
 
         view.findViewById(R.id.buttonYes).setOnClickListener(v -> {
-            interactiveAlertDialog.dismiss();
+            //interactiveAlertDialog.dismiss();
 
             deleteUser(
                     ((EditText) view.findViewById(R.id.edit_Text_Email_Address)).getText().toString(),
@@ -163,23 +163,40 @@ public class SettingsActivity extends AppCompatActivity {
         // Prompt the user to re-provide their sign-in credentials
         if (user != null) {
             user.reauthenticate(credential)
-                    .addOnCompleteListener(task -> user.delete()
-                            .addOnCompleteListener(task1 -> {
-                                if (task1.isSuccessful()) {
-                                    System.out.println("alex   ---: User account deleted.");
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            // need check if re-authentication was successful
+                            if (task.isSuccessful()){
+                                user.delete()
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    System.out.println("alex   ---: User account deleted.");
 
-                                    startActivity(new Intent(SettingsActivity.this, RegisterActivity.class));
-                                    Toast.makeText(SettingsActivity.this, "Your account is deleted", Toast.LENGTH_LONG).show();
-                                    interactiveAlertDialog.dismiss();
-                                }
-                                else {
+                                                    startActivity(new Intent(SettingsActivity.this, RegisterActivity.class));
+                                                    Toast.makeText(SettingsActivity.this, "Your account is deleted", Toast.LENGTH_LONG).show();
+                                                    interactiveAlertDialog.dismiss();
+                                                }
+                                                else {
 
-                                    Toast.makeText(SettingsActivity.this, "Wrong Data, please try again!", Toast.LENGTH_LONG).show();
+                                                    Toast.makeText(SettingsActivity.this, "Something went wrong, please try again!", Toast.LENGTH_LONG).show();
 
-                                }
-                            })
-                    );
+                                                }
+                                            }
+                                        });
+                            }
+                            else {
+
+                                Toast.makeText(SettingsActivity.this, "Wrong Email or Password, please try again!", Toast.LENGTH_LONG).show();
+
+                            }
+
+                        }
+                    });
         }
+
 
     }
 

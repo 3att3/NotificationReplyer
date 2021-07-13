@@ -1,12 +1,11 @@
 package com.example.notificationreplyer;
 
-import android.content.ComponentName;
+import android.annotation.SuppressLint;
+
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +14,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Space;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,13 +27,15 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     FirebaseUser currentUser;
-    private TextView textViewLoggedOrNot, tvMainWelcome, tvMdlMat1;
-    private Button btnMdlMatProceed, btnMdlMatBack, btnBottomMatOpenWeb;
+    private TextView tvMainWelcome;
+    private TextView tvMdlMat1;
+    private Button btnMdlMatProceed;
+    private Button btnMdlMatBack;
     private Space spaceMdlMatHorizontal1;
-    private ImageView ivOpenWebArea;
 
     MaterialCardView matCVMidl, matCVBottom;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,25 +43,32 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        textViewLoggedOrNot = findViewById(R.id.textViewLoggedOrNot);
         tvMdlMat1 = findViewById(R.id.tvMdlMat1);
+        TextView tvBtMat1 = findViewById(R.id.tvBtMat1);
 
         matCVMidl = findViewById(R.id.matCVMidl);
         matCVBottom = findViewById(R.id.matCVBottom);
 
         btnMdlMatProceed = findViewById(R.id.btnMdlMatProceed);
         btnMdlMatBack = findViewById(R.id.btnMdlMatBack);
-        btnBottomMatOpenWeb = findViewById(R.id.btnBottomMatOpenWeb);
+        Button btnBottomMatOpenWeb = findViewById(R.id.btnBottomMatOpenWeb);
 
         spaceMdlMatHorizontal1 = findViewById(R.id.spaceMdlMatHorizontal1);
 
-        ivOpenWebArea = findViewById(R.id.ivOpenWebArea);
+        ImageView ivOpenWebArea = findViewById(R.id.ivOpenWebArea);
 
 
+
+        // Dummy initiations //
+        tvBtMat1.setText(getResources().getString(R.string.installWinApplicationPt1) +
+                System.getProperty("line.separator") +
+                getResources().getString(R.string.installWinApplicationPt2));
+
+        // ---------------- //
 
         ShPref shPref = new ShPref(this);
 
-        Boolean isOpenFirstTime = shPref.getOpenFirstTime();
+        boolean isOpenFirstTime = shPref.getOpenFirstTime();
         if (!isOpenFirstTime){
             // show user first welcome message with extra data
             matCVMidl.dispatchWindowVisibilityChanged(View.VISIBLE);
@@ -107,13 +114,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         });
 
-        ivOpenWebArea.setOnClickListener(v -> {
-
-            showInfoDialog("Windows App",
-                    "In order for the replyable notifications to show in your windows computer, a new application is needed. \n" +
-                            "You can find our Windows application at our website by pressing the button \"Open Website\"");
-
-        });
+        ivOpenWebArea.setOnClickListener(v -> showInfoDialog("Windows App",
+                "In order for the replyable notifications to show in your windows computer, a new application is needed. \n" +
+                        "You can find our Windows application at our website by pressing the button \"Open Website\""));
 
     }
 
@@ -121,8 +124,7 @@ public class MainActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        // it has to be since there is a dedicated login and register activity
-        // and it only let it here if login/register is successful
+        // just a small precaution
 
         tvMainWelcome = findViewById(R.id.tvMainWelcome);
 
@@ -131,20 +133,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
+    @SuppressLint("SetTextI18n")
     private void updateUI(FirebaseUser firebaseUser){
         if (firebaseUser != null){
-            textViewLoggedOrNot.setText("User is logged/signed in");
             //getUpdates();
-            tvMainWelcome.setText("Welcome " + firebaseUser.getDisplayName() + "!");
-        }
-        else {
-            textViewLoggedOrNot.setText("User is NOT logged/signed in");
+            tvMainWelcome.setText(getResources().getString(R.string.welcome_) + firebaseUser.getDisplayName() + "!");
         }
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu (Menu menu) {
@@ -161,65 +156,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // show alerts
-
-    private void showSuccessDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialogTheme);
-        View view = LayoutInflater.from(MainActivity.this).inflate(
-                R.layout.layout_success_dialog,
-                (ConstraintLayout) findViewById(R.id.layoutDialogContainer)
-        );
-        builder.setView(view);
-        ((TextView) view.findViewById(R.id.textTitle)).setText("Title Success"); //or  .getResources().getString(R.id....)
-        ((TextView) view.findViewById(R.id.textMessage)).setText("Message success");
-        ((Button) view.findViewById(R.id.buttonAction)).setText("okay");
-        ((ImageView) view.findViewById(R.id.imageIcon)).setImageResource(R.drawable.ic_baseline_done_24);
-
-        final AlertDialog alertDialog = builder.create();
-
-        view.findViewById(R.id.buttonAction).setOnClickListener(v -> {
-            alertDialog.dismiss();
-        });
-
-        if (alertDialog.getWindow() != null) {
-            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
-        }
-
-        alertDialog.show();
-
-    }
-
-    private void showWarningDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialogTheme);
-        View view = LayoutInflater.from(MainActivity.this).inflate(
-                R.layout.layout_warning_dialog,
-                (ConstraintLayout) findViewById(R.id.layoutDialogContainer)
-        );
-        builder.setView(view);
-        ((TextView) view.findViewById(R.id.textTitle)).setText("Title Success"); //or  .getResources().getString(R.id....)
-        ((TextView) view.findViewById(R.id.textMessage)).setText("Message success");
-        ((Button) view.findViewById(R.id.buttonYes)).setText("yes");
-        ((Button) view.findViewById(R.id.buttonNo)).setText("no");
-        ((ImageView) view.findViewById(R.id.imageIcon)).setImageResource(R.drawable.ic_baseline_warning_24);
-
-        final AlertDialog alertDialog = builder.create();
-
-        view.findViewById(R.id.buttonYes).setOnClickListener(v -> {
-            alertDialog.dismiss();
-            Toast.makeText(this, "Button Yes was pressed", Toast.LENGTH_SHORT).show();
-        });
-
-        view.findViewById(R.id.buttonNo).setOnClickListener(v -> {
-            alertDialog.dismiss();
-            Toast.makeText(this, "Button NO was pressed", Toast.LENGTH_SHORT).show();
-        });
-
-        if (alertDialog.getWindow() != null) {
-            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
-        }
-
-        alertDialog.show();
-    }
+    // show alert/s
 
     private void showInfoDialog(String title, String message){
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialogTheme);
@@ -228,16 +165,14 @@ public class MainActivity extends AppCompatActivity {
                 (ConstraintLayout) findViewById(R.id.layoutDialogContainer)
         );
         builder.setView(view);
-        ((TextView) view.findViewById(R.id.textTitle)).setText(title); //or  .getResources().getString(R.id....)
+        ((TextView) view.findViewById(R.id.textTitle)).setText(title); //or  .getResources().getString(R.string....)
         ((TextView) view.findViewById(R.id.textMessage)).setText(message);
-        ((Button) view.findViewById(R.id.buttonAction)).setText("Ok");
+        ((Button) view.findViewById(R.id.buttonAction)).setText(getResources().getString(R.string.ok));
         ((ImageView) view.findViewById(R.id.imageIcon)).setImageResource(R.drawable.ic_baseline_info_24);
 
         final AlertDialog alertDialog = builder.create();
 
-        view.findViewById(R.id.buttonAction).setOnClickListener(v -> {
-            alertDialog.dismiss();
-        });
+        view.findViewById(R.id.buttonAction).setOnClickListener(v -> alertDialog.dismiss());
 
         if (alertDialog.getWindow() != null) {
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
