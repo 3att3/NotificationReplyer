@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnBottomMatOpenWeb.setOnClickListener(v -> {
-            String url = "http://www.amazon.com"; // maybe add a website
+            String url = "https://filedn.com/l3kyrUktX1XpySaldrw7b28/"; // maybe add a website
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         });
 

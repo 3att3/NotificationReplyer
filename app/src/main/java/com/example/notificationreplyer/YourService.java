@@ -32,8 +32,12 @@ public class YourService extends Service {
         // not really needed, the important part is the NotificationService witch is running on background while the app is running
         // this class is only needed to keep the app alive
 
+        ShPref shPref = new ShPref(this);
+        if (shPref.getRunInBackground()){
 
-        startForeground();
+            startForeground();
+
+        }
 
         return super.onStartCommand(intent, flags, startId);
     }

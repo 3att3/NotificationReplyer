@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -43,6 +44,10 @@ public class SettingsActivity extends AppCompatActivity {
         settingsSwitchRunInBackground = findViewById(R.id.settingsSwitchRunInBackground);
 
 
+        ShPref shPref = new ShPref(this);
+        settingsSwitchRunInBackground.setChecked(shPref.getRunInBackground());
+
+
 
         // On click
 
@@ -70,6 +75,13 @@ public class SettingsActivity extends AppCompatActivity {
                             "For verification please fill your credentials below."
             );
 
+        });
+
+        settingsSwitchRunInBackground.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                shPref.setRunInBackground(isChecked);
+            }
         });
     }
 

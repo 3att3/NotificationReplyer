@@ -91,7 +91,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+                    android:paddingEnd="4dp"
+                    tools:ignore="UseSwitchCompatOrMaterialXml"
+                    android:theme="@style/SCBSwitch"/>
 
             </LinearLayout>
 

@@ -8,7 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 public class ShPref extends AppCompatActivity{
 
     private final String SHARED_PREF_NAME = "thisIsASharedPreferenceName",
-            OPEN_FIRST_TIME_KEY = "openFirstTimeKey";
+            OPEN_FIRST_TIME_KEY = "openFirstTimeKey",
+            RUN_IN_BACKGROUND_KEY = "runInBackgroundKey";
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
@@ -28,6 +29,15 @@ public class ShPref extends AppCompatActivity{
 
     public boolean getOpenFirstTime(){
         return sharedPreferences.getBoolean(OPEN_FIRST_TIME_KEY, false);
+    }
+
+    public void setRunInBackground(boolean runInBackground){
+        editor.putBoolean(RUN_IN_BACKGROUND_KEY, runInBackground);
+        editor.commit();
+    }
+
+    public boolean getRunInBackground(){
+        return sharedPreferences.getBoolean(RUN_IN_BACKGROUND_KEY, false);
     }
 
 
