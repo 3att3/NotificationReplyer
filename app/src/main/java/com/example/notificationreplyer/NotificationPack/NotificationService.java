@@ -1,8 +1,14 @@
 package com.example.notificationreplyer.NotificationPack;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
@@ -17,6 +23,8 @@ import com.robj.notificationhelperlibrary.utils.NotificationUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import models.Action;
 import services.BaseNotificationListener;
@@ -31,6 +39,7 @@ public class NotificationService extends BaseNotificationListener {
 
     private boolean isFirebaseListener = false;
 
+    NotificationUtils notificationUtils = new NotificationUtils();
 
     @Override
     public void onCreate() {
@@ -38,6 +47,82 @@ public class NotificationService extends BaseNotificationListener {
 
         context = getApplicationContext();
 
+       /* Timer timer = new Timer();
+        TimerTask task = new Helper();
+
+        timer.schedule(task, 2000, 6000000);*/
+    }
+
+
+    class Helper extends TimerTask {
+        public int i = 0;
+        public void run()
+        {
+            System.out.println("Timer ran " + ++i);
+            getActiveNotification();
+        }
+    }
+
+
+    public Notification getActiveNotification() {
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        StatusBarNotification[] barNotifications = notificationManager.getActiveNotifications();
+
+        for(StatusBarNotification sbNotification: barNotifications) {
+
+            // check the list and firebase to remove the rest
+            // in order for that probably need for a temp list
+            ArrayList<NotifAction> tempNotificationActionArrayList = new ArrayList();
+            ArrayList<Integer> tempNAIds = new ArrayList();
+            NotifAction notifAction = new NotifAction();
+
+            String packageName = sbNotification.getPackageName();
+            Bundle extras = sbNotification.getNotification().extras;
+            String title = extras.getString("android.title");
+
+            String notificationID = notifAction.createID(packageName, title);
+
+
+            for (NotifAction nAction :
+                    notifActionArrayList) {
+                if (nAction.getNotificationID().equals(notificationID)){
+                    //tempNotificationActionArrayList.add(nAction);
+                    tempNAIds.add(notifActionArrayList.indexOf(nAction));
+                }
+            }
+
+
+            for (int i = notifActionArrayList.size() - 1; i > -1; i--){
+                if (!tempNAIds.contains(i)){
+                    // remove those from list, firebase
+                    //NotifAction notifAction1 = notifActionArrayList.get(i);
+
+                    notifActionArrayList.remove(i);
+
+                    DatabaseReference myRef;
+
+                    if (currentUser == null){
+                        if (mAuth == null){
+                            mAuth = FirebaseAuth.getInstance();
+                        }
+                        currentUser = mAuth.getCurrentUser();
+                    }
+
+                    if (!isFirebaseListener) {
+                        getUpdates();
+                    }
+
+                    myRef = database.getReference("users/" + currentUser.getUid() + "/notifications");
+
+                    myRef.child(notificationID).removeValue();
+
+                }
+            }
+
+
+        }
+        return null;
     }
 
 
@@ -46,7 +131,7 @@ public class NotificationService extends BaseNotificationListener {
         return true;
     }
 
-    NotificationUtils notificationUtils = new NotificationUtils();
+
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -67,11 +152,14 @@ public class NotificationService extends BaseNotificationListener {
             getUpdates();
         }
 
+        // SBN (statusBarNotification)
         String packageName = sbn.getPackageName(); // eg: org.telegram.messenger
         Notification notification = sbn.getNotification();
         //System.out.println("alex2   ---: " + packageName);
-        String notificationName = notification.extras.getString("android.title");
-        String notificationText = notification.extras.getCharSequence("android.text").toString();
+        Bundle extras = notification.extras;
+        String notificationName = extras.getString("android.title");
+        String notificationText = extras.getCharSequence("android.text").toString();
+
 
 
         if (true) { // this if is for development purposes only! On production it is needed to be gone ( the comment below )
@@ -98,14 +186,24 @@ public class NotificationService extends BaseNotificationListener {
 
                     if(!isSameWithLastTextInChat(groupId, notificationText)){
 
-                        myRef = database.getReference("users/" + currentUser.getUid() + "/notifications/" + groupId + "/" + uniqueId);
+                        NotifAction notifAction = new NotifAction();
 
+                        if (notifAction.createID(packageName, notificationName).contains("com-google-android-apps-messaging")) {
+
+                            for (LastDeletedMessage lsDeletedMessage :
+                                    lastDeletedMessageArrayList) {
+                                if (lsDeletedMessage.getNotificationID().equals(notifAction.createID(packageName, notificationName))
+                                        && lsDeletedMessage.getMessage().equals(notificationText)){
+                                    return;
+                                }
+                            }
+
+                        }
+
+                        myRef = database.getReference("users/" + currentUser.getUid() + "/notifications/" + groupId + "/" + uniqueId);
                         myRef.child("message").setValue(notificationText);
 
-                        NotifAction notifAction = new NotifAction();
                         notifAction.setEntireObject(action, notificationName, notificationText, packageName, timestamp.getTime());
-
-                        // notificationText="";
 
                         notifActionArrayList.add(notifAction);
                     }
@@ -177,6 +275,7 @@ public class NotificationService extends BaseNotificationListener {
         return false;
     }
 
+    ArrayList<LastDeletedMessage> lastDeletedMessageArrayList = new ArrayList<LastDeletedMessage>();
     private void getUpdates(){
         DatabaseReference myRef;
         try {
@@ -209,7 +308,29 @@ public class NotificationService extends BaseNotificationListener {
                                         Action action = notifAction.getAction();
 
                                         try {
+
+                                            action.sendReply(context, value);
+
+
                                             DatabaseReference myRef;
+
+
+                                            // error here even tho it is in a try catch
+                                            // error unknown
+                                            for (NotifAction nA :
+                                                    notifActionArrayList) {
+                                                if (notifAction.getNotificationID().equals(key)){
+
+                                                    if (key.contains("com-google-android-apps-messaging")){
+                                                        LastDeletedMessage lastDeletedMessage = new LastDeletedMessage();
+                                                        lastDeletedMessage.setNotificationID(key);
+                                                        lastDeletedMessage.setMessage(notifAction.getMessage());
+                                                        lastDeletedMessageArrayList.add(lastDeletedMessage);
+                                                    }
+
+                                                    notifActionArrayList.remove(nA);
+                                                }
+                                            }
 
                                             myRef = database.getReference("users/" + currentUser.getUid() + "/replies");
                                             myRef.child(key).removeValue();
@@ -226,13 +347,7 @@ public class NotificationService extends BaseNotificationListener {
                                             System.out.println("haha");
                                             System.out.println("houhou");
 
-                                            for (NotifAction nA :
-                                                    notifActionArrayList) {
-                                                if (notifAction.getNotificationID().equals(key)){
-                                                    notifActionArrayList.remove(nA);
-                                                }
-                                            }
-                                            action.sendReply(context, value);
+
 
 
                                             return;
