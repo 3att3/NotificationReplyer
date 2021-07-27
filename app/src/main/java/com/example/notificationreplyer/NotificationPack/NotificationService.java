@@ -311,12 +311,8 @@ public class NotificationService extends BaseNotificationListener {
 
                                             action.sendReply(context, value);
 
-
                                             DatabaseReference myRef;
 
-
-                                            // error here even tho it is in a try catch
-                                            // error unknown
                                             for (NotifAction nA :
                                                     notifActionArrayList) {
                                                 if (notifAction.getNotificationID().equals(key)){
@@ -328,7 +324,9 @@ public class NotificationService extends BaseNotificationListener {
                                                         lastDeletedMessageArrayList.add(lastDeletedMessage);
                                                     }
 
+                                                    // due to deletion of an object from the list, we create a conflict.
                                                     notifActionArrayList.remove(nA);
+                                                    break; // we fix that error by breaking the loop after that deletion
                                                 }
                                             }
 
@@ -338,17 +336,13 @@ public class NotificationService extends BaseNotificationListener {
                                             myRef = database.getReference("users/" + currentUser.getUid() + "/notifications");
                                             myRef.child(key).removeValue();
 
-
-                                            // deletedNotifActionArrayList.add(notifAction);
-                                            // TODO  I thing this need to change (line below) I thing it removes only one but more exists
-                                            // TODO it definitely dose that
-
-                                            notifActionArrayList.remove(notifAction);
-                                            System.out.println("haha");
-                                            System.out.println("houhou");
-
-
-
+                                            // Delete all notification messages with the same id and older than the replyable one
+                                            for (int i=notifActionArrayList.size()-1; i > -1; i--){
+                                                if (notifActionArrayList.get(i).getNotificationID().equals(key)
+                                                && notifActionArrayList.get(i).getTime() < notifAction.getTime()){
+                                                    notifActionArrayList.remove(i);
+                                                }
+                                            }
 
                                             return;
 
