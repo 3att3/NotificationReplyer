@@ -194,6 +194,7 @@ public class NotificationService extends BaseNotificationListener {
                                     lastDeletedMessageArrayList) {
                                 if (lsDeletedMessage.getNotificationID().equals(notifAction.createID(packageName, notificationName))
                                         && lsDeletedMessage.getMessage().equals(notificationText)){
+                                    cancelNotification(sbn.getKey());
                                     return;
                                 }
                             }
@@ -203,7 +204,7 @@ public class NotificationService extends BaseNotificationListener {
                         myRef = database.getReference("users/" + currentUser.getUid() + "/notifications/" + groupId + "/" + uniqueId);
                         myRef.child("message").setValue(notificationText);
 
-                        notifAction.setEntireObject(action, notificationName, notificationText, packageName, timestamp.getTime());
+                        notifAction.setEntireObject(action, notificationName, notificationText, packageName, sbn.getKey(), timestamp.getTime());
 
                         notifActionArrayList.add(notifAction);
                     }
@@ -277,7 +278,7 @@ public class NotificationService extends BaseNotificationListener {
 
     ArrayList<LastDeletedMessage> lastDeletedMessageArrayList = new ArrayList<LastDeletedMessage>();
     private void getUpdates(){
-        DatabaseReference myRef;
+        DatabaseReference myRef, myRef2;
         try {
             if (currentUser.getUid() != null){
                 myRef = database.getReference("users/" + currentUser.getUid() + "/replies");
@@ -302,7 +303,7 @@ public class NotificationService extends BaseNotificationListener {
                                 for (NotifAction notifAction :
                                         notifActionArrayList) {
 
-                                    // TODO MAY NEED SOME FIXING ( perhaps from foreach d : dataSnapshot.getChildren() )
+                                    // _TODO MAY NEED SOME FIXING ( perhaps from foreach d : dataSnapshot.getChildren() )
                                     if (notifAction.getNotificationID().equals(key)) {
 
                                         Action action = notifAction.getAction();
@@ -349,6 +350,56 @@ public class NotificationService extends BaseNotificationListener {
                                         } catch (PendingIntent.CanceledException e) {
                                             e.printStackTrace();
                                         }
+
+                                    }
+
+                                } // end foreach
+
+                            } // end if
+
+                        } // end foreach
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        // Failed to read value
+                        Log.w("Failed to read value.", error.toException());
+                    }
+                });
+
+
+                myRef2 = database.getReference("users/" + currentUser.getUid() + "/remove");
+
+                //isFirebaseListener = true;
+
+                // Read from the database
+                myRef2.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot d :
+                                dataSnapshot.getChildren()) {
+
+                            System.out.println("Alex   ---: d: " + d);
+
+                            String key = d.getKey();
+                            String value = (String) d.getValue();
+
+                            if (notifActionArrayList != null || notifActionArrayList.size() > 0){
+
+                                for (NotifAction notifAction :
+                                        notifActionArrayList) {
+
+                                    // _TODO MAY NEED SOME FIXING ( perhaps from foreach d : dataSnapshot.getChildren() )
+                                    if (notifAction.getNotificationID().equals(key)) {
+
+                                        cancelNotification(notifAction.getSbnKey());
+
+                                        //myRef2 = database.getReference("users/" + currentUser.getUid() + "/remove");
+                                        myRef2.child(key).removeValue();
+                                        break;
 
                                     }
 

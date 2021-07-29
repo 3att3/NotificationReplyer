@@ -4,7 +4,20 @@ import models.Action;
 
 public class NotifAction {
     private Action action;
-    private String title, message, notificationID, app;
+    private String title;
+    private String message;
+    private String notificationID;
+    private String app;
+
+    public String getSbnKey() {
+        return sbnKey;
+    }
+
+    public void setSbnKey(String sbnKey) {
+        this.sbnKey = sbnKey;
+    }
+
+    private String sbnKey;
     private long time;
 
     public String getApp() { return app; }
@@ -39,13 +52,14 @@ public class NotifAction {
 
     // public void setTime(long time) { this.time = time; }
 
-    public void setEntireObject(Action action, String title, String message, String app, long time) { //action, message,
+    public void setEntireObject(Action action, String title, String message, String app, String sbnKey, long time) { //action, message,
         this.action = action;
         this.title = title;
         this.message = message;
         this.time = time;
         this.notificationID = createID(app, title);
         this.app = app;
+        this.sbnKey = sbnKey;
     }
 
     public String createID(String app, String value2){
