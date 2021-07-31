@@ -38,6 +38,9 @@ public class YourService extends Service {
             startForeground();
 
         }
+        else {
+            stopForeground(flags);
+        }
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -49,7 +52,7 @@ public class YourService extends Service {
                 notificationIntent, 0);
 
 
-        String channelName = "My Background Service";
+        String channelName = "This background service is needed to keep the app up and running for listening on notifications and send them to your computer";
 
         NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
         channel.setLightColor(Color.BLUE);

@@ -19,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.orhanobut.hawk.Hawk;
 import com.robj.notificationhelperlibrary.utils.NotificationUtils;
 
 import java.sql.Timestamp;
@@ -35,6 +36,7 @@ public class NotificationService extends BaseNotificationListener {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private ArrayList<NotifAction> notifActionArrayList = new ArrayList();
+    private final String HAWK_NOTIF_ACTION_ARRAY_LIST_KEY = "hawkNotifActionArrayList";
     //private ArrayList<NotifAction> deletedNotifActionArrayList = new ArrayList();
 
     private boolean isFirebaseListener = false;
@@ -46,6 +48,15 @@ public class NotificationService extends BaseNotificationListener {
         super.onCreate();
 
         context = getApplicationContext();
+        Hawk.init(context).build();
+
+        if (notifActionArrayList.isEmpty()){
+            notifActionArrayList = getListFromHawk();
+        }
+
+        if (!isFirebaseListener) {
+            getUpdates();
+        }
 
        /* Timer timer = new Timer();
         TimerTask task = new Helper();
@@ -99,6 +110,7 @@ public class NotificationService extends BaseNotificationListener {
                     //NotifAction notifAction1 = notifActionArrayList.get(i);
 
                     notifActionArrayList.remove(i);
+                    addListToHawk(notifActionArrayList);
 
                     DatabaseReference myRef;
 
@@ -207,6 +219,7 @@ public class NotificationService extends BaseNotificationListener {
                         notifAction.setEntireObject(action, notificationName, notificationText, packageName, sbn.getKey(), timestamp.getTime());
 
                         notifActionArrayList.add(notifAction);
+                        addListToHawk(notifActionArrayList);
                     }
 
 
@@ -327,6 +340,7 @@ public class NotificationService extends BaseNotificationListener {
 
                                                     // due to deletion of an object from the list, we create a conflict.
                                                     notifActionArrayList.remove(nA);
+                                                    addListToHawk(notifActionArrayList);
                                                     break; // we fix that error by breaking the loop after that deletion
                                                 }
                                             }
@@ -342,6 +356,7 @@ public class NotificationService extends BaseNotificationListener {
                                                 if (notifActionArrayList.get(i).getNotificationID().equals(key)
                                                 && notifActionArrayList.get(i).getTime() < notifAction.getTime()){
                                                     notifActionArrayList.remove(i);
+                                                    addListToHawk(notifActionArrayList);
                                                 }
                                             }
 
@@ -406,6 +421,9 @@ public class NotificationService extends BaseNotificationListener {
                                 } // end foreach
 
                             } // end if
+                            else {
+                                myRef2.child(key).removeValue();
+                            }
 
                         } // end foreach
 
@@ -459,6 +477,7 @@ public class NotificationService extends BaseNotificationListener {
 
             if (toRemoveList != null && toRemoveList.size() > 0) {
                 notifActionArrayList.removeAll(toRemoveList);
+                addListToHawk(notifActionArrayList);
             }
             System.out.println("alex   ---: testing for the size of the list: " + notifActionArrayList.size());
 
@@ -472,5 +491,20 @@ public class NotificationService extends BaseNotificationListener {
 
     private String genGId(String app, String title){
         return new NotifAction().createID(app, title);
+    }
+
+
+    private void addListToHawk(ArrayList arrayList){
+        Hawk.put(HAWK_NOTIF_ACTION_ARRAY_LIST_KEY, arrayList);
+    }
+
+    private ArrayList<NotifAction> getListFromHawk(){
+        if (Hawk.contains(HAWK_NOTIF_ACTION_ARRAY_LIST_KEY)){
+
+            return Hawk.get(HAWK_NOTIF_ACTION_ARRAY_LIST_KEY);
+        }
+        else {
+            return new ArrayList<NotifAction>();
+        }
     }
 }
