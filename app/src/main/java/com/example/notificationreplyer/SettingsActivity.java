@@ -27,7 +27,7 @@ public class SettingsActivity extends AppCompatActivity {
     Button settingsBtnDeleteAccount, settingsBtnLogOut, settingsBtnChNotAccess;
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
-    Switch settingsSwitchRunInBackground;
+    //Switch settingsSwitchRunInBackground;
 
 
     @Override
@@ -40,11 +40,11 @@ public class SettingsActivity extends AppCompatActivity {
         settingsBtnLogOut = findViewById(R.id.settingsBtnLogOut);
         settingsBtnChNotAccess = findViewById(R.id.settingsBtnChNotAccess);
 
-        settingsSwitchRunInBackground = findViewById(R.id.settingsSwitchRunInBackground);
+        //settingsSwitchRunInBackground = findViewById(R.id.settingsSwitchRunInBackground);
 
 
-        ShPref shPref = new ShPref(this);
-        settingsSwitchRunInBackground.setChecked(shPref.getRunInBackground());
+        /*ShPref shPref = new ShPref(this);
+        settingsSwitchRunInBackground.setChecked(shPref.getRunInBackground());*/
 
 
 
@@ -75,9 +75,9 @@ public class SettingsActivity extends AppCompatActivity {
 
         });
 
-        settingsSwitchRunInBackground.setOnCheckedChangeListener((buttonView, isChecked) -> {
+       /* settingsSwitchRunInBackground.setOnCheckedChangeListener((buttonView, isChecked) -> {
             shPref.setRunInBackground(isChecked);
-        });
+        });*/
     }
 
 
