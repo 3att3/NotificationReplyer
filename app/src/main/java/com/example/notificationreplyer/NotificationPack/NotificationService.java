@@ -62,17 +62,15 @@ public class NotificationService extends BaseNotificationListener {
             getUpdates();
         }
 
-        //removeNoNActiveNotifications();
-
         Timer timer = new Timer();
         TimerTask task = new Helper();
 
-        timer.schedule(task, 2000, 60000); // 10 min // cur is 1 min. add one 0 to become 10 min.
+        timer.schedule(task, 2000, 60000); // 10 min // cur is 1 min. add one "0" to become 10 min.
     }
 
 
 
-
+    // Periodically "ask" for check for active notifications and remove the rest from notifActionArrayList
     class Helper extends TimerTask {
         public int i = 0;
         public void run()
@@ -84,7 +82,7 @@ public class NotificationService extends BaseNotificationListener {
         }
     }
 
-
+    // Check for active notifications in the status bar and remove the rest from the notifActionArrayList and from the firebase
     public void removeNoNActiveNotifications() {
         StatusBarNotification[] activeNos = getActiveNotifications();
 
@@ -128,7 +126,7 @@ public class NotificationService extends BaseNotificationListener {
 
             // Removes not Active Notifications //
 
-            // if common groups fount then delete those that are not in active notifications
+            // if common groups fount then delete those that are not in the Status Bar
             if (indexesMatchingGroupIDs.size() > 0){
 
                 ArrayList<String> removedGroupIDs = new ArrayList<>();
@@ -136,7 +134,7 @@ public class NotificationService extends BaseNotificationListener {
 
                     if (!indexesMatchingGroupIDs.contains(index)){
 
-                        // first remove it from firebase ( the entire Group)
+                        // first remove it from firebase ( the entire Group )
                         if (!removedGroupIDs.contains(notifActionArrayList.get(index).getNotificationID())){
 
                             myRef.child("notifications").child(notifActionArrayList.get(index).getNotificationID()).removeValue();
@@ -167,7 +165,7 @@ public class NotificationService extends BaseNotificationListener {
     }
 
 
-
+    // a library need this, but all the checks are done in onNotificationPosted and removeNoNActiveNotifications because they have some small differences
     @Override
     protected boolean shouldAppBeAnnounced(StatusBarNotification sbn) {
         return true;
@@ -178,9 +176,9 @@ public class NotificationService extends BaseNotificationListener {
 
 
     Timestamp timestamp;
-
+    // When a new notification is posted, check if it is replyable and add it in notifActionArrayList and the firebase to be shown in the windows app
     @Override
-    protected void onNotificationPosted(StatusBarNotification sbn, String dismissKey) {
+    protected void onNotificationPosted(StatusBarNotification sbn, String dismissKey) { // SBN (statusBarNotification)
         DatabaseReference myRef;
 
         if (currentUser == null){
@@ -194,7 +192,6 @@ public class NotificationService extends BaseNotificationListener {
             getUpdates();
         }
 
-        // SBN (statusBarNotification)
         String packageName = sbn.getPackageName(); // eg: org.telegram.messenger
         Notification notification = sbn.getNotification();
 
@@ -239,12 +236,14 @@ public class NotificationService extends BaseNotificationListener {
 
                     }
 
+                    // add to firebase
                     myRef = database.getReference("users/" + currentUser.getUid() + "/notifications/" + groupId + "/" + uniqueId);
                     myRef.child("message").setValue(notificationText);
 
+                    // add to notifActionArrayList
                     notifAction.setEntireObject(action, notificationName, notificationText, packageName, sbn.getKey(), timestamp.getTime());
-
                     notifActionArrayList.add(notifAction);
+
                     addListToHawk(notifActionArrayList);
                 }
 
@@ -252,17 +251,14 @@ public class NotificationService extends BaseNotificationListener {
 
             }
         } catch (Exception e) {
-            System.out.println("Alex   ---: stackTrace");
             e.printStackTrace();
         }
 
     }
 
-
+    // Check if the notifications message is the same with the last entry from the same person/group that we have
     private boolean isSameWithLastTextInChat(String groupID, String message){
         ArrayList<StupidObject> listOfList = new ArrayList<>();
-
-
 
         ArrayList<String> gIDs = new ArrayList<>();
         for (NotifAction stupidObject :
@@ -315,16 +311,19 @@ public class NotificationService extends BaseNotificationListener {
     }
 
     ArrayList<LastDeletedMessage> lastDeletedMessageArrayList = new ArrayList<>();
+    // enable listeners from the realtimeBD firebase
     private void getUpdates(){
+
         DatabaseReference myRefReplies, myRefRemove;
         try {
+
             if (currentUser.getUid() != null){
                 myRefReplies = database.getReference("users/" + currentUser.getUid() + "/replies");
                 myRefRemove = database.getReference("users/" + currentUser.getUid() + "/remove");
 
                 isFirebaseListener = true;
 
-                // Read from the database
+                // Read from the database for replies
                 myRefReplies.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -403,7 +402,6 @@ public class NotificationService extends BaseNotificationListener {
 
                     @Override
                     public void onCancelled(DatabaseError error) {
-                        // Failed to read value
                         Log.w("Failed to read value.", error.toException());
                     }
                 });
@@ -411,7 +409,7 @@ public class NotificationService extends BaseNotificationListener {
 
 
 
-                // Read from the database
+                // Read from the database for remove
                 myRefRemove.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -450,7 +448,6 @@ public class NotificationService extends BaseNotificationListener {
 
                     @Override
                     public void onCancelled(DatabaseError error) {
-                        // Failed to read value
                         Log.w("Failed to read value.", error.toException());
                     }
                 });
@@ -462,6 +459,7 @@ public class NotificationService extends BaseNotificationListener {
 
     }
 
+    // when a notification from the status bar is removed, is getting removed from both notifActionArrayList and firebase
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
         DatabaseReference myRef;
@@ -495,14 +493,19 @@ public class NotificationService extends BaseNotificationListener {
         super.onNotificationRemoved(sbn);
     }
 
+    // returns the groupID that is a combination of the title and the app
+    // the actual generation of the groupID is happening in the NotifAction class
     private String genGId(String app, String title){
         return new NotifAction().createID(app, title);
     }
 
+    // Hawk is a more advance Shared Preferences
+    // Adds the NotifActionArrayList to the Hawk.
     private void addListToHawk(ArrayList<NotifAction> arrayList){
         Hawk.put(HAWK_NOTIF_ACTION_ARRAY_LIST_KEY, arrayList);
     }
 
+    // Get the NotifActionArrayList from the Hawk, if it doesn't exists it returns an empty ArrayList
     private ArrayList<NotifAction> getListFromHawk(){
 
         if (Hawk.contains(HAWK_NOTIF_ACTION_ARRAY_LIST_KEY)){
