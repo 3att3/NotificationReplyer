@@ -1,13 +1,8 @@
 package com.example.notificationreplyer.NotificationPack;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
@@ -37,11 +32,12 @@ public class NotificationService extends BaseNotificationListener {
     private FirebaseUser currentUser;
     private ArrayList<NotifAction> notifActionArrayList = new ArrayList();
     private final String HAWK_NOTIF_ACTION_ARRAY_LIST_KEY = "hawkNotifActionArrayList";
-    //private ArrayList<NotifAction> deletedNotifActionArrayList = new ArrayList();
 
     private boolean isFirebaseListener = false;
 
     NotificationUtils notificationUtils = new NotificationUtils();
+
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     @Override
     public void onCreate() {
@@ -54,88 +50,106 @@ public class NotificationService extends BaseNotificationListener {
             notifActionArrayList = getListFromHawk();
         }
 
+
+        if (currentUser == null){
+            if (mAuth == null){
+                mAuth = FirebaseAuth.getInstance();
+            }
+            currentUser = mAuth.getCurrentUser();
+        }
+
         if (!isFirebaseListener) {
             getUpdates();
         }
 
-       /* Timer timer = new Timer();
+        //removeNoNActiveNotifications();
+
+        Timer timer = new Timer();
         TimerTask task = new Helper();
 
-        timer.schedule(task, 2000, 6000000);*/
+        timer.schedule(task, 2000, 60000); // 10 min // cur is 1 min. add one 0 to become 10 min.
     }
+
+
 
 
     class Helper extends TimerTask {
         public int i = 0;
         public void run()
         {
+            System.out.println("====================== periodic check (Helper) ======================");
             System.out.println("Timer ran " + ++i);
-            getActiveNotification();
+            removeNoNActiveNotifications();
+
         }
     }
 
 
-    public Notification getActiveNotification() {
+    public void removeNoNActiveNotifications() {
+        StatusBarNotification[] activeNos = getActiveNotifications();
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        StatusBarNotification[] barNotifications = notificationManager.getActiveNotifications();
+        DatabaseReference myRef = database.getReference("users/" + currentUser.getUid());
+        ArrayList<Integer> indexesMatchingGroupIDs = new ArrayList<>();
 
-        for(StatusBarNotification sbNotification: barNotifications) {
+        // get all the indexes of the active notifications in the notifActionArrayList
+        for (StatusBarNotification sbNotification : activeNos) {
+            try {
 
-            // check the list and firebase to remove the rest
-            // in order for that probably need for a temp list
-            ArrayList<NotifAction> tempNotificationActionArrayList = new ArrayList();
-            ArrayList<Integer> tempNAIds = new ArrayList();
-            NotifAction notifAction = new NotifAction();
+                String packageName = sbNotification.getPackageName();
 
-            String packageName = sbNotification.getPackageName();
-            Bundle extras = sbNotification.getNotification().extras;
-            String title = extras.getString("android.title");
+                Bundle extras = sbNotification.getNotification().extras;
+                String title = extras.getString("android.title");
 
-            String notificationID = notifAction.createID(packageName, title);
-
-
-            for (NotifAction nAction :
-                    notifActionArrayList) {
-                if (nAction.getNotificationID().equals(notificationID)){
-                    //tempNotificationActionArrayList.add(nAction);
-                    tempNAIds.add(notifActionArrayList.indexOf(nAction));
-                }
-            }
-
-
-            for (int i = notifActionArrayList.size() - 1; i > -1; i--){
-                if (!tempNAIds.contains(i)){
-                    // remove those from list, firebase
-                    //NotifAction notifAction1 = notifActionArrayList.get(i);
-
-                    notifActionArrayList.remove(i);
-                    addListToHawk(notifActionArrayList);
-
-                    DatabaseReference myRef;
-
-                    if (currentUser == null){
-                        if (mAuth == null){
-                            mAuth = FirebaseAuth.getInstance();
-                        }
-                        currentUser = mAuth.getCurrentUser();
+                for (NotifAction na :
+                        notifActionArrayList) {
+                    if (na.getNotificationID().equals(genGId(packageName, title))) {
+                        indexesMatchingGroupIDs.add(notifActionArrayList.indexOf(na));
                     }
-
-                    if (!isFirebaseListener) {
-                        getUpdates();
-                    }
-
-                    myRef = database.getReference("users/" + currentUser.getUid() + "/notifications");
-
-                    myRef.child(notificationID).removeValue();
-
                 }
-            }
 
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         }
-        return null;
+
+
+        // Removes not Active Notifications //
+
+        // if common groups fount then delete those that are not in active notifications
+        if (indexesMatchingGroupIDs.size() > 0){
+
+            ArrayList<String> removedGroupIDs = new ArrayList<>();
+            for (int index = notifActionArrayList.size() -1; index > -1; index--){
+
+                if (!indexesMatchingGroupIDs.contains(index)){
+
+                    // first remove it from firebase ( the entire Group)
+                    if (!removedGroupIDs.contains(notifActionArrayList.get(index).getNotificationID())){
+
+                        myRef.child("notifications").child(notifActionArrayList.get(index).getNotificationID()).removeValue();
+                        removedGroupIDs.add(notifActionArrayList.get(index).getNotificationID());
+
+                    }
+
+                    // then remove it from the list. Is done multiple times because there are (sometimes) multiple entries with the same groupID.
+                    notifActionArrayList.remove(index);
+                }
+            }
+        }
+        else {
+            notifActionArrayList.clear();
+            myRef.child("notifications").removeValue();
+            myRef.child("remove").removeValue();
+            myRef.child("reply").removeValue();
+        }
+
+        // Update hawk: notifActionArrayList backup.
+        addListToHawk(notifActionArrayList);
+
+
     }
+
 
 
     @Override
@@ -145,7 +159,7 @@ public class NotificationService extends BaseNotificationListener {
 
 
 
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
+
 
     Timestamp timestamp;
 
@@ -291,15 +305,16 @@ public class NotificationService extends BaseNotificationListener {
 
     ArrayList<LastDeletedMessage> lastDeletedMessageArrayList = new ArrayList<LastDeletedMessage>();
     private void getUpdates(){
-        DatabaseReference myRef, myRef2;
+        DatabaseReference myRefReplies, myRefRemove;
         try {
             if (currentUser.getUid() != null){
-                myRef = database.getReference("users/" + currentUser.getUid() + "/replies");
+                myRefReplies = database.getReference("users/" + currentUser.getUid() + "/replies");
+                myRefRemove = database.getReference("users/" + currentUser.getUid() + "/remove");
 
                 isFirebaseListener = true;
 
                 // Read from the database
-                myRef.addValueEventListener(new ValueEventListener() {
+                myRefReplies.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -385,12 +400,10 @@ public class NotificationService extends BaseNotificationListener {
                 });
 
 
-                myRef2 = database.getReference("users/" + currentUser.getUid() + "/remove");
 
-                //isFirebaseListener = true;
 
                 // Read from the database
-                myRef2.addValueEventListener(new ValueEventListener() {
+                myRefRemove.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -398,6 +411,8 @@ public class NotificationService extends BaseNotificationListener {
                                 dataSnapshot.getChildren()) {
 
                             System.out.println("Alex   ---: d: " + d);
+
+                            DatabaseReference myRef2 = database.getReference("users/" + currentUser.getUid() + "/remove");
 
                             String key = d.getKey();
                             String value = (String) d.getValue();
@@ -412,7 +427,6 @@ public class NotificationService extends BaseNotificationListener {
 
                                         cancelNotification(notifAction.getSbnKey());
 
-                                        //myRef2 = database.getReference("users/" + currentUser.getUid() + "/remove");
                                         myRef2.child(key).removeValue();
                                         break;
 

@@ -77,15 +77,10 @@ public class SettingsActivity extends AppCompatActivity {
 
         });
 
-        settingsSwitchRunInBackground.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                shPref.setRunInBackground(isChecked);
-            }
+        settingsSwitchRunInBackground.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            shPref.setRunInBackground(isChecked);
         });
     }
-
-
 
 
     private void showWarningDialog(String title, String message){

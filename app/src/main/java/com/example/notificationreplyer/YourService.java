@@ -13,6 +13,11 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.example.notificationreplyer.NotificationPack.NotificationService;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class YourService extends Service {
 
     private static final int NOTIFICATION_ID = 24211;
@@ -45,10 +50,11 @@ public class YourService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    PendingIntent pendingIntent;
     private void startForeground() {
         Intent notificationIntent = new Intent(this, MainActivity.class);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+        pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, 0);
 
 
@@ -78,5 +84,21 @@ public class YourService extends Service {
 
 
     }
+
+    private void notificationBuilderMethod(){
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+        Notification notification = notificationBuilder
+                .setOngoing(true)
+                .setSmallIcon(R.drawable.appimgdr)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText("Service is running background")
+                .setContentIntent(pendingIntent)
+                .setPriority(NotificationManager.IMPORTANCE_MIN)
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .build();
+
+        startForeground(NOTIFICATION_ID, notification);
+    }
+
 
 }

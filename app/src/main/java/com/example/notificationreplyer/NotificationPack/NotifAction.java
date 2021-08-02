@@ -19,6 +19,15 @@ public class NotifAction {
 
     private String sbnKey;
     private long time;
+    private long nWhen;
+
+    public long getNWhen() {
+        return nWhen;
+    }
+
+    public void setNWhen(long nWhen) {
+        this.nWhen = nWhen;
+    }
 
     public String getApp() { return app; }
 
@@ -60,6 +69,18 @@ public class NotifAction {
         this.notificationID = createID(app, title);
         this.app = app;
         this.sbnKey = sbnKey;
+    }
+
+    // added the nWhen
+    public void setEntireObject(Action action, String title, String message, String app, String sbnKey, long nWhen, long time) { //action, message,
+        this.action = action;
+        this.title = title;
+        this.message = message;
+        this.time = time;
+        this.notificationID = createID(app, title);
+        this.app = app;
+        this.sbnKey = sbnKey;
+        this.nWhen = nWhen;
     }
 
     public String createID(String app, String value2){

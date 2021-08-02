@@ -67,6 +67,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textColor="@color/black"
                     android:text="Email:" />
 
                 <EditText
@@ -75,6 +76,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
+                    android:textColor="@color/black"
                     android:inputType="textEmailAddress" />
             </LinearLayout>
 
@@ -90,7 +92,8 @@
                     android:id="@+id/text_View_DA_Password"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="0"
+                    android:textColor="@color/black"
                     android:text="Password:" />
 
                 <EditText
@@ -99,6 +102,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
+                    android:textColor="@color/black"
                     android:inputType="textPassword" />
             </LinearLayout>
 

@@ -37,7 +37,7 @@ public class ShPref extends AppCompatActivity{
     }
 
     public boolean getRunInBackground(){
-        return sharedPreferences.getBoolean(RUN_IN_BACKGROUND_KEY, false);
+        return sharedPreferences.getBoolean(RUN_IN_BACKGROUND_KEY, true);
     }
 
 
