@@ -88,64 +88,80 @@ public class NotificationService extends BaseNotificationListener {
     public void removeNoNActiveNotifications() {
         StatusBarNotification[] activeNos = getActiveNotifications();
 
-        DatabaseReference myRef = database.getReference("users/" + currentUser.getUid());
-        ArrayList<Integer> indexesMatchingGroupIDs = new ArrayList<>();
-
-        // get all the indexes of the active notifications in the notifActionArrayList
-        for (StatusBarNotification sbNotification : activeNos) {
-            try {
-
-                String packageName = sbNotification.getPackageName();
-
-                Bundle extras = sbNotification.getNotification().extras;
-                String title = extras.getString("android.title");
-
-                for (NotifAction na :
-                        notifActionArrayList) {
-                    if (na.getNotificationID().equals(genGId(packageName, title))) {
-                        indexesMatchingGroupIDs.add(notifActionArrayList.indexOf(na));
-                    }
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (currentUser == null){
+            if (mAuth == null){
+                mAuth = FirebaseAuth.getInstance();
             }
-
+            currentUser = mAuth.getCurrentUser();
         }
 
+        if (!isFirebaseListener) {
+            getUpdates();
+        }
 
-        // Removes not Active Notifications //
+        try {
+            DatabaseReference myRef = database.getReference("users/" + currentUser.getUid());
+            ArrayList<Integer> indexesMatchingGroupIDs = new ArrayList<>();
 
-        // if common groups fount then delete those that are not in active notifications
-        if (indexesMatchingGroupIDs.size() > 0){
+            // get all the indexes of the active notifications in the notifActionArrayList
+            for (StatusBarNotification sbNotification : activeNos) {
+                try {
 
-            ArrayList<String> removedGroupIDs = new ArrayList<>();
-            for (int index = notifActionArrayList.size() -1; index > -1; index--){
+                    String packageName = sbNotification.getPackageName();
 
-                if (!indexesMatchingGroupIDs.contains(index)){
+                    Bundle extras = sbNotification.getNotification().extras;
+                    String title = extras.getString("android.title");
 
-                    // first remove it from firebase ( the entire Group)
-                    if (!removedGroupIDs.contains(notifActionArrayList.get(index).getNotificationID())){
-
-                        myRef.child("notifications").child(notifActionArrayList.get(index).getNotificationID()).removeValue();
-                        removedGroupIDs.add(notifActionArrayList.get(index).getNotificationID());
-
+                    for (NotifAction na :
+                            notifActionArrayList) {
+                        if (na.getNotificationID().equals(genGId(packageName, title))) {
+                            indexesMatchingGroupIDs.add(notifActionArrayList.indexOf(na));
+                        }
                     }
 
-                    // then remove it from the list. Is done multiple times because there are (sometimes) multiple entries with the same groupID.
-                    notifActionArrayList.remove(index);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+
+            // Removes not Active Notifications //
+
+            // if common groups fount then delete those that are not in active notifications
+            if (indexesMatchingGroupIDs.size() > 0){
+
+                ArrayList<String> removedGroupIDs = new ArrayList<>();
+                for (int index = notifActionArrayList.size() -1; index > -1; index--){
+
+                    if (!indexesMatchingGroupIDs.contains(index)){
+
+                        // first remove it from firebase ( the entire Group)
+                        if (!removedGroupIDs.contains(notifActionArrayList.get(index).getNotificationID())){
+
+                            myRef.child("notifications").child(notifActionArrayList.get(index).getNotificationID()).removeValue();
+                            removedGroupIDs.add(notifActionArrayList.get(index).getNotificationID());
+
+                        }
+
+                        // then remove it from the list. Is done multiple times because there are (sometimes) multiple entries with the same groupID.
+                        notifActionArrayList.remove(index);
+                    }
                 }
             }
-        }
-        else {
-            notifActionArrayList.clear();
-            myRef.child("notifications").removeValue();
-            myRef.child("remove").removeValue();
-            myRef.child("reply").removeValue();
-        }
+            else {
+                notifActionArrayList.clear();
+                myRef.child("notifications").removeValue();
+                myRef.child("remove").removeValue();
+                myRef.child("reply").removeValue();
+            }
 
-        // Update hawk: notifActionArrayList backup.
-        addListToHawk(notifActionArrayList);
+            // Update hawk: notifActionArrayList backup.
+            addListToHawk(notifActionArrayList);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }

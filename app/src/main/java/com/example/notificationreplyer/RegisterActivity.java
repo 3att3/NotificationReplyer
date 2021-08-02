@@ -2,14 +2,20 @@ package com.example.notificationreplyer;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -33,6 +39,7 @@ public class RegisterActivity extends AppCompatActivity {
     TextInputLayout usernameLayout, emailLayout, passLayout, pass2Layout;
     TextInputEditText editTextUsername, editTextEmail,editTextPass,editTextPass2;
     String username,email,pass,pass2;
+    ImageView ivRegisterActInfo;
     Activity activity;
 
     @Override
@@ -42,6 +49,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         findViews();
         addTextChangedListeners();
+        addOtherListeners();
         activity = this;
         mAuth = FirebaseAuth.getInstance();
         firebaseUser = mAuth.getCurrentUser();
@@ -135,6 +143,7 @@ public class RegisterActivity extends AppCompatActivity {
         passLayout = findViewById(R.id.register_password_text_layout);
         editTextPass2 = findViewById(R.id.register_confirmpass_edit_text);
         pass2Layout = findViewById(R.id.register_confirmpass_text_layout);
+        ivRegisterActInfo = findViewById(R.id.ivRegisterActInfo);
     }
 
     private void addTextChangedListeners(){
@@ -184,6 +193,14 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    private void addOtherListeners(){
+        ivRegisterActInfo.setOnClickListener(v -> showInfoDialog(
+                "Why register?",
+                "We need to send your notifications from your phone to your computer.\n" +
+                        "The only way for that, is to connect both of them with the same account."
+        ));
+    }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)  {
@@ -194,6 +211,30 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         return super.onKeyDown(keyCode, event);
+    }
+
+
+    private void showInfoDialog(String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this, R.style.AlertDialogTheme);
+        View view = LayoutInflater.from(RegisterActivity.this).inflate(
+                R.layout.layout_info_dialog,
+                (ConstraintLayout) findViewById(R.id.layoutDialogContainer)
+        );
+        builder.setView(view);
+        ((TextView) view.findViewById(R.id.textTitle)).setText(title); //or  .getResources().getString(R.string....)
+        ((TextView) view.findViewById(R.id.textMessage)).setText(message);
+        ((Button) view.findViewById(R.id.buttonAction)).setText(getResources().getString(R.string.ok));
+        ((ImageView) view.findViewById(R.id.imageIcon)).setImageResource(R.drawable.ic_baseline_info_24);
+
+        final AlertDialog alertDialog = builder.create();
+
+        view.findViewById(R.id.buttonAction).setOnClickListener(v -> alertDialog.dismiss());
+
+        if (alertDialog.getWindow() != null) {
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        }
+
+        alertDialog.show();
     }
 
 }
