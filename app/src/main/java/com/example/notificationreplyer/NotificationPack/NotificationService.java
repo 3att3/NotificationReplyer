@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
+import com.example.notificationreplyer.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -402,7 +403,7 @@ public class NotificationService extends BaseNotificationListener {
 
                     @Override
                     public void onCancelled(DatabaseError error) {
-                        Log.w("Failed to read value.", error.toException());
+                        Log.w(getResources().getString(R.string.failed_to_read_value), error.toException());
                     }
                 });
 
@@ -448,7 +449,7 @@ public class NotificationService extends BaseNotificationListener {
 
                     @Override
                     public void onCancelled(DatabaseError error) {
-                        Log.w("Failed to read value.", error.toException());
+                        Log.w(getResources().getString(R.string.failed_to_read_value), error.toException());
                     }
                 });
 

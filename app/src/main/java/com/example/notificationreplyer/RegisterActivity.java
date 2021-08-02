@@ -33,7 +33,6 @@ import www.sanju.motiontoast.MotionToast;
 public class RegisterActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseUser firebaseUser;
-    DatabaseReference ref;
     TextView login;
     Button registerButton;
     TextInputLayout usernameLayout, emailLayout, passLayout, pass2Layout;
@@ -59,7 +58,6 @@ public class RegisterActivity extends AppCompatActivity {
             finish();
         }
 
-        ref = FirebaseDatabase.getInstance().getReference("students");
         registerButton.setOnClickListener(view -> {
             username = editTextUsername.getText().toString().trim();
             email = editTextEmail.getText().toString().trim();
@@ -69,29 +67,29 @@ public class RegisterActivity extends AppCompatActivity {
             if (username.isEmpty() || email.isEmpty() || pass.isEmpty() || pass2.isEmpty()) {
 
                 if (username.isEmpty()) {
-                    usernameLayout.setError("You have to type your Username");
+                    usernameLayout.setError(getResources().getText(R.string.You_have_to_type_yourUsername));
                 }
                 if (email.isEmpty()) {
-                    emailLayout.setError("You have to type your Email Address");
+                    emailLayout.setError(getResources().getText(R.string.You_have_to_type_yourEmailAddress));
                 }
                 if (pass.isEmpty()) {
-                    passLayout.setError("You have to type your Password");
+                    passLayout.setError(getResources().getText(R.string.You_have_to_type_yourPassword));
                 }
                 if (pass2.isEmpty()) {
-                    pass2Layout.setError("You have to type your Password");
+                    pass2Layout.setError(getResources().getText(R.string.You_have_to_retype_yourPassword));
                 }
 
             } else {
 
                 if (!pass.equals(pass2)) {
 
-                    pass2Layout.setError("Passwords don't match");
-                    passLayout.setError("Passwords don't match");
+                    pass2Layout.setError(getResources().getText(R.string.Passwords_don__t_match));
+                    passLayout.setError(getResources().getText(R.string.Passwords_don__t_match));
 
                 } else {
 
                     mAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) { // Αν είναι successful μεταφορά στο HomeActivity
+                        if (task.isSuccessful()) { // if it is successful go to HomeActivity
                             String uid = FirebaseAuth.getInstance().getUid();
                             if (uid != null) {
 
@@ -102,9 +100,9 @@ public class RegisterActivity extends AppCompatActivity {
                                 user.updateProfile(profileUpdates)
                                         .addOnCompleteListener(task1 -> {
                                             if (task1.isSuccessful()) {
-                                                System.out.println("User profile updated.");
+                                                System.out.println(getResources().getText(R.string.User_profile_updated));
                                             }
-                                            // Μεταφορά στο HomeActivity
+                                            // Transfer to HomeActivity
                                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                                             finish();
                                         });
@@ -115,20 +113,20 @@ public class RegisterActivity extends AppCompatActivity {
 
                             try {
                                 throw task.getException();
-                            } catch(FirebaseAuthUserCollisionException e) { // Εμφάνιση toast για διάφορα exceptions
-                                StaticMethods.showMotionToast(activity,"Oops, problem!","This email is already used by another user", MotionToast.TOAST_WARNING);
+                            } catch(FirebaseAuthUserCollisionException e) { // Show toast for the different exceptions
+                                StaticMethods.showMotionToast(activity, getResources().getString(R.string.Oops__problem),getResources().getString(R.string.This_email_is_already_used_by_another_user), MotionToast.TOAST_WARNING);
                             } catch(FirebaseAuthWeakPasswordException e) {
-                                StaticMethods.showMotionToast(activity,"Oops, problem!","Your password isn't strong enough",MotionToast.TOAST_WARNING);
+                                StaticMethods.showMotionToast(activity,getResources().getString(R.string.Oops__problem),getResources().getString(R.string.Your_password_isn__t_strong_enough),MotionToast.TOAST_WARNING);
                             } catch(FirebaseAuthInvalidCredentialsException e) {
-                                StaticMethods.showMotionToast(activity,"Oops, problem!","Invalid Email address",MotionToast.TOAST_WARNING);
+                                StaticMethods.showMotionToast(activity,getResources().getString(R.string.Oops__problem),getResources().getString(R.string.InvalidEmail_address),MotionToast.TOAST_WARNING);
                             } catch(Exception e) {
-                                StaticMethods.showMotionToast(activity,"Oops, problem!","Sign up failed, try again",MotionToast.TOAST_WARNING);
-                                System.out.println("alex   ---: error1: " + e);
+                                StaticMethods.showMotionToast(activity,getResources().getString(R.string.Oops__problem),getResources().getString(R.string.Sign_up_failed___try_again),MotionToast.TOAST_WARNING);
+                                e.printStackTrace();
                             }
 
                         }
 
-                    }); // Έναρξη δημιουργίας του χρήστη στην firebase
+                    });
 
                 }
             }
@@ -204,9 +202,9 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void addOtherListeners(){
         ivRegisterActInfo.setOnClickListener(v -> showInfoDialog(
-                "Why register?",
-                "We need to send your notifications from your phone to your computer.\n" +
-                        "The only way for that, is to connect both of them with the same account."
+                getResources().getString(R.string.Why_register__),
+                getResources().getString(R.string.We_need_to_send_your_notifications_from_your_phone_to_your_computer) + "\n" +
+                        getResources().getString(R.string.The_only_way_for_that___is_to_connect_both_of_them_with_the_same_account)
         ));
     }
 

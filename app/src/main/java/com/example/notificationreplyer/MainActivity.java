@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             tvMdlMat1.setText(R.string.enableNotificationAccess);
             btnMdlMatBack.setVisibility(View.GONE);
             spaceMdlMatHorizontal1.setVisibility(View.GONE);
-            btnMdlMatProceed.setText("Proceed");
+            btnMdlMatProceed.setText(getResources().getString(R.string.Proceed));
         }
         else{
             matCVMidl.setVisibility(View.INVISIBLE);
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnMdlMatProceed.setOnClickListener(v -> {
 
-            if (btnMdlMatProceed.getText().toString().equals("Open Settings")){
+            if (btnMdlMatProceed.getText().toString().equals(getResources().getString(R.string.OpenSettings))){
 
                 shPref.setOpenFirstTime(true);
                 Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 tvMdlMat1.setText(R.string.enableNotificationAccessInstractions);
                 btnMdlMatBack.setVisibility(View.VISIBLE);
                 spaceMdlMatHorizontal1.setVisibility(View.VISIBLE);
-                btnMdlMatProceed.setText("Open Settings");
+                btnMdlMatProceed.setText(getResources().getString(R.string.OpenSettings));
             }
 
         });
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             tvMdlMat1.setText(R.string.enableNotificationAccess);
             btnMdlMatBack.setVisibility(View.GONE);
             spaceMdlMatHorizontal1.setVisibility(View.GONE);
-            btnMdlMatProceed.setText("Proceed");
+            btnMdlMatProceed.setText(getResources().getString(R.string.Proceed));
         });
 
         btnBottomMatOpenWeb.setOnClickListener(v -> {
@@ -114,9 +114,10 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         });
 
-        ivOpenWebArea.setOnClickListener(v -> showInfoDialog("Windows App",
-                "In order for the replyable notifications to show in your windows computer, a new application is needed. \n" +
-                        "You can find our Windows application at our website by pressing the button \"Open Website\""));
+        ivOpenWebArea.setOnClickListener(v -> showInfoDialog(getResources().getString(R.string.Windows_App),
+                getResources().getString(R.string.In_order_for_the_replyable_notifications_to_show_in_your_windows_computer___a_new_application_is_needed) + "\n" +
+                        getResources().getString(R.string.You_can_find_our_Windows_application_at_our_website_by_pressing_the_button) + " \""+
+                        getResources().getString(R.string.OpenWebsite) +"\""));
 
     }
 
@@ -137,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateUI(FirebaseUser firebaseUser){
         if (firebaseUser != null){
             //getUpdates();
-            tvMainWelcome.setText(getResources().getString(R.string.welcome_) + firebaseUser.getDisplayName() + "!");
+            tvMainWelcome.setText(getResources().getString(R.string.welcome_) + " " + firebaseUser.getDisplayName() + "!");
         }
     }
 

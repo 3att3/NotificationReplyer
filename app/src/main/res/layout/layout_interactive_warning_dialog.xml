@@ -68,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textColor="@color/black"
-                    android:text="Email:" />
+                    android:text="@string/Email___" />
 
                 <EditText
                     android:id="@+id/edit_Text_Email_Address"
@@ -94,7 +94,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0"
                     android:textColor="@color/black"
-                    android:text="Password:" />
+                    android:text="@string/Password___" />
 
                 <EditText
                     android:id="@+id/edit_Text_Password"

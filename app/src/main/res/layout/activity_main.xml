@@ -46,7 +46,7 @@
                 android:id="@+id/tvMainWelcome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Welcome!"
+                android:text="@string/Welcome"
                 android:textAlignment="center"
                 android:textSize="20sp"
                 android:typeface="monospace"
@@ -104,7 +104,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="38dp"
                     android:background="@drawable/button_neutral_left_corners_background"
-                    android:text="Back" />
+                    android:text="@string/Back" />
 
                 <Space
                     android:id="@+id/spaceMdlMatHorizontal1"
@@ -115,7 +115,7 @@
                     android:id="@+id/btnMdlMatProceed"
                     android:layout_width="match_parent"
                     android:layout_height="38dp"                    android:background="@drawable/button_neutral_right_corners_background"
-                    android:text="Proceed" />
+                    android:text="@string/Proceed" />
 
             </LinearLayout>
 
@@ -173,7 +173,7 @@
                 android:layout_marginEnd="55dp"
                 android:layout_marginStart="55dp"
                 android:background="@drawable/button_neutral_background"
-                android:text="Open Website" />
+                android:text="@string/OpenWebsite" />
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

@@ -48,7 +48,7 @@ public class YourService extends Service {
                 notificationIntent, 0);
 
 
-        String channelName = "This background service is needed to keep the app up and running for listening on notifications and send them to your computer";
+        String channelName = getResources().getString(R.string.This_background_service_is_needed_to_keep_the_app_up_and_running_for_listening_on_notifications_and_send_them_to_your_computer);
 
         NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
         channel.setLightColor(Color.BLUE);
@@ -64,7 +64,7 @@ public class YourService extends Service {
                 .setOngoing(true)
                 .setSmallIcon(R.drawable.appimgdr)
                 .setContentTitle(getString(R.string.app_name))
-                .setContentText("Service is running background")
+                .setContentText(getResources().getString(R.string.Service_is_running_background))
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationManager.IMPORTANCE_MIN)
                 .setCategory(Notification.CATEGORY_SERVICE)
@@ -74,21 +74,5 @@ public class YourService extends Service {
 
 
     }
-
-    private void notificationBuilderMethod(){
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
-        Notification notification = notificationBuilder
-                .setOngoing(true)
-                .setSmallIcon(R.drawable.appimgdr)
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText("Service is running background")
-                .setContentIntent(pendingIntent)
-                .setPriority(NotificationManager.IMPORTANCE_MIN)
-                .setCategory(Notification.CATEGORY_SERVICE)
-                .build();
-
-        startForeground(NOTIFICATION_ID, notification);
-    }
-
 
 }

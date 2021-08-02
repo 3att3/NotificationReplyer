@@ -61,10 +61,10 @@ public class LoginActivity extends AppCompatActivity {
             pass = editTextPass.getText().toString().trim();
             if (email.isEmpty() || pass.isEmpty()) {
                 if (email.isEmpty()) {
-                    emailLayout.setError("Please enter your Email");
+                    emailLayout.setError(getResources().getString(R.string.Please_enter_yourEmail));
                 }
                 if (pass.isEmpty()) {
-                    passLayout.setError("Please enter your Password");
+                    passLayout.setError(getResources().getString(R.string.Please_enter_yourPassword));
                 }
             } else {
                 mAuth.signInWithEmailAndPassword(email, pass)
@@ -76,13 +76,13 @@ public class LoginActivity extends AppCompatActivity {
                                 try {
                                     throw task.getException();
                                 } catch(FirebaseAuthInvalidUserException e) {
-                                    StaticMethods.showMotionToast(activity,"Oops, problem!","Connection Issues.", MotionToast.TOAST_WARNING);
+                                    StaticMethods.showMotionToast(activity,getResources().getString(R.string.Oops__problem),getResources().getString(R.string.ConnectionIssues), MotionToast.TOAST_WARNING);
                                     e.printStackTrace();
                                 } catch(FirebaseAuthInvalidCredentialsException e) {
-                                    StaticMethods.showMotionToast(activity, "Oops, problem!","Wrong Email/Password.",MotionToast.TOAST_WARNING);
+                                    StaticMethods.showMotionToast(activity, getResources().getString(R.string.Oops__problem),getResources().getString(R.string.WrongEmail__Password),MotionToast.TOAST_WARNING);
                                     e.printStackTrace();
                                 } catch (Exception e) {
-                                    StaticMethods.showMotionToast(activity,"Oops, problem!","Connection Issues.",MotionToast.TOAST_WARNING);
+                                    StaticMethods.showMotionToast(activity,getResources().getString(R.string.Oops__problem),getResources().getString(R.string.ConnectionIssues),MotionToast.TOAST_WARNING);
                                     e.printStackTrace();
                                 }
                             }
@@ -129,9 +129,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private void addOtherListeners(){
         ivLoginActInfo.setOnClickListener(v -> showInfoDialog(
-                "Why LogIn?",
-                "We need to send your notifications from your phone to your computer.\n" +
-                        "The only way for that, is to connect both of them with the same account."
+                getResources().getString(R.string.WhyLogIn_),
+                getResources().getString(R.string.We_need_to_send_your_notifications_from_your_phone_to_your_computer) + "\n" +
+                        getResources().getString(R.string.The_only_way_for_that___is_to_connect_both_of_them_with_the_same_account)
         ));
     }
 

@@ -34,7 +34,7 @@
                     android:id="@+id/textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Welcome!"
+                    android:text="@string/Welcome"
                     android:textAlignment="center"
                     android:textSize="34sp"
                     android:typeface="monospace"
@@ -63,7 +63,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:hint="Email"
+                android:hint="@string/Email"
                 app:errorEnabled="true"
                 app:startIconDrawable="@drawable/ic_baseline_email_24">
 
@@ -81,7 +81,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Password"
+                android:hint="@string/Password"
                 app:errorEnabled="true"
                 app:startIconDrawable="@drawable/ic_baseline_vpn_key_24">
 
@@ -102,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/button_neutral_background"
                 android:elevation="5dp"
-                android:text="Login"
+                android:text="@string/Login"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
                 android:textSize="22sp"
@@ -121,7 +121,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingEnd="5dp"
-                    android:text="Don't have an account yet?"
+                    android:text="@string/Don__t_have_an_account_yet__"
                     android:typeface="normal" />
 
                 <TextView
@@ -129,7 +129,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Sign up!"
+                    android:text="@string/Sign_up__"
                     android:textColor="@color/color_OutLine" />
             </LinearLayout>
 

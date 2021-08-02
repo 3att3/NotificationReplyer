@@ -42,7 +42,7 @@
                         android:id="@+id/textView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Welcome!"
+                        android:text="@string/Welcome"
                         android:textAlignment="center"
                         android:textSize="34sp"
                         android:typeface="monospace"
@@ -70,7 +70,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="Username"
+                    android:hint="@string/Username"
                     app:errorEnabled="true"
                     app:errorIconDrawable="@drawable/ic_baseline_error_24"
                     app:startIconDrawable="@drawable/ic_baseline_face_24">
@@ -91,7 +91,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Email"
+                    android:hint="@string/Email"
                     app:errorEnabled="true"
                     app:errorIconDrawable="@drawable/ic_baseline_error_24"
                     app:startIconDrawable="@drawable/ic_baseline_email_24">
@@ -114,7 +114,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:hint="Password"
+                    android:hint="@string/Password"
                     app:errorEnabled="true"
                     app:errorIconDrawable="@drawable/ic_baseline_error_24"
                     app:startIconDrawable="@drawable/ic_baseline_vpn_key_24">
@@ -133,7 +133,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Confirm your Password"
+                    android:hint="@string/Confirm_your_Password"
                     app:errorEnabled="true"
                     app:errorIconDrawable="@drawable/ic_baseline_error_24"
                     app:startIconDrawable="@drawable/ic_baseline_vpn_key_24">
@@ -153,7 +153,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:elevation="5dp"
-                    android:text="Sign Up"
+                    android:text="@string/Sign_Up"
                     android:background="@drawable/button_neutral_background"
                     android:textAllCaps="false"
                     android:textColor="#FFFFFF"
@@ -173,7 +173,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingEnd="5dp"
-                        android:text="Already have an Account?"
+                        android:text="@string/Already_have_an_Account__"
                         android:typeface="normal" />
 
                     <TextView
@@ -181,7 +181,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Sign in!"
+                        android:text="@string/Sign_in__"
                         android:textColor="@color/color_OutLine" />
                 </LinearLayout>
 
