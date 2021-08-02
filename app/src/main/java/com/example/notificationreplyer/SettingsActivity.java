@@ -1,25 +1,22 @@
 package com.example.notificationreplyer;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,6 +25,8 @@ import com.google.firebase.auth.FirebaseUser;
 public class SettingsActivity extends AppCompatActivity {
 
     Button settingsBtnDeleteAccount, settingsBtnLogOut, settingsBtnChNotAccess;
+
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     Switch settingsSwitchRunInBackground;
 
 
@@ -49,10 +48,9 @@ public class SettingsActivity extends AppCompatActivity {
 
 
 
-        // On click
+        // On click //
 
         settingsBtnChNotAccess.setOnClickListener(v -> {
-            // maybe say, if you going to disable then the app wont work properly
 
             Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
             startActivity(intent);
@@ -66,8 +64,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         });
 
+        // Ask for credentials before deleting the account.
         settingsBtnDeleteAccount.setOnClickListener(v -> {
-            // definitely say for are you sure and maybe/definitely need to ask for password
 
             showInteractiveWarningDialog(
                     "Delete Account",
@@ -137,8 +135,6 @@ public class SettingsActivity extends AppCompatActivity {
         interactiveAlertDialog = builder.create();
 
         view.findViewById(R.id.buttonYes).setOnClickListener(v -> {
-            //interactiveAlertDialog.dismiss();
-
             deleteUser(
                     ((EditText) view.findViewById(R.id.edit_Text_Email_Address)).getText().toString(),
                     ((EditText) view.findViewById(R.id.edit_Text_Password)).getText().toString()
@@ -162,45 +158,35 @@ public class SettingsActivity extends AppCompatActivity {
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Get auth credentials from the user for re-authentication. The example below shows
-        // email and password credentials but there are multiple possible providers,
-        // such as GoogleAuthProvider or FacebookAuthProvider.
+        // Get auth credentials from the user for re-authentication.
         AuthCredential credential = EmailAuthProvider.getCredential(email, password);
 
-        // Prompt the user to re-provide their sign-in credentials
         if (user != null) {
             user.reauthenticate(credential)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            // need check if re-authentication was successful
-                            if (task.isSuccessful()){
-                                user.delete()
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    System.out.println("alex   ---: User account deleted.");
+                    .addOnCompleteListener(task -> {
 
-                                                    startActivity(new Intent(SettingsActivity.this, RegisterActivity.class));
-                                                    Toast.makeText(SettingsActivity.this, "Your account is deleted", Toast.LENGTH_LONG).show();
-                                                    interactiveAlertDialog.dismiss();
-                                                }
-                                                else {
+                        if (task.isSuccessful()){
+                            user.delete()
+                                    .addOnCompleteListener(task1 -> {
+                                        if (task1.isSuccessful()) {
 
-                                                    Toast.makeText(SettingsActivity.this, "Something went wrong, please try again!", Toast.LENGTH_LONG).show();
+                                            startActivity(new Intent(SettingsActivity.this, RegisterActivity.class));
+                                            Toast.makeText(SettingsActivity.this, "Your account is deleted", Toast.LENGTH_LONG).show();
+                                            interactiveAlertDialog.dismiss();
+                                        }
+                                        else {
 
-                                                }
-                                            }
-                                        });
-                            }
-                            else {
+                                            Toast.makeText(SettingsActivity.this, "Something went wrong, please try again!", Toast.LENGTH_LONG).show();
 
-                                Toast.makeText(SettingsActivity.this, "Wrong Email or Password, please try again!", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                        }
+                        else {
 
-                            }
+                            Toast.makeText(SettingsActivity.this, "Wrong Email or Password, please try again!", Toast.LENGTH_LONG).show();
 
                         }
+
                     });
         }
 

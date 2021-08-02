@@ -13,11 +13,6 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import com.example.notificationreplyer.NotificationPack.NotificationService;
-
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class YourService extends Service {
 
     private static final int NOTIFICATION_ID = 24211;
@@ -31,11 +26,6 @@ public class YourService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-
-        // do your jobs here
-
-        // not really needed, the important part is the NotificationService witch is running on background while the app is running
-        // this class is only needed to keep the app alive
 
         ShPref shPref = new ShPref(this);
         if (shPref.getRunInBackground()){
@@ -62,7 +52,7 @@ public class YourService extends Service {
 
         NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
         channel.setLightColor(Color.BLUE);
-        channel.setLockscreenVisibility(Notification.VISIBILITY_SECRET); // VISIBILITY_PRIVATE
+        channel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         assert manager != null;

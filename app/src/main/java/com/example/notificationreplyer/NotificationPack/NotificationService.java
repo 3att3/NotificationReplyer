@@ -197,68 +197,63 @@ public class NotificationService extends BaseNotificationListener {
         // SBN (statusBarNotification)
         String packageName = sbn.getPackageName(); // eg: org.telegram.messenger
         Notification notification = sbn.getNotification();
-        //System.out.println("alex2   ---: " + packageName);
+
         Bundle extras = notification.extras;
         String notificationName = extras.getString("android.title");
         String notificationText = extras.getCharSequence("android.text").toString();
 
 
+        try {
 
-        if (true) { // this if is for development purposes only! On production it is needed to be gone ( the comment below )
-            //notificationName.equals("MyShares: Alexandros Gavriel")
-            try {
+            Action action = notificationUtils.getQuickReplyAction(notification, packageName);
 
-                Action action = notificationUtils.getQuickReplyAction(notification, packageName);
+            if (action.isQuickReply()){
 
-                if (action.isQuickReply()){
-
-                    //return number of milliseconds since January 1, 1970, 00:00:00 GMT
-                    timestamp = new Timestamp(System.currentTimeMillis());
-                    System.out.println(timestamp.getTime());
+                //return number of milliseconds since January 1, 1970, 00:00:00 GMT
+                timestamp = new Timestamp(System.currentTimeMillis());
 
 
-                    String groupId = genGId(packageName, notificationName);
-                    String uniqueId;
-                    if (notificationName.contains(":")){
-                        String[] splitStr = notificationName.split(":");
-                        uniqueId = timestamp.getTime() + "_" + splitStr[1];
-                    }else {
-                        uniqueId = String.valueOf(timestamp.getTime());
-                    }
+                String groupId = genGId(packageName, notificationName);
+                String uniqueId;
+                if (notificationName.contains(":")){
+                    String[] splitStr = notificationName.split(":");
+                    uniqueId = timestamp.getTime() + "_" + splitStr[1];
+                }else {
+                    uniqueId = String.valueOf(timestamp.getTime());
+                }
 
-                    if(!isSameWithLastTextInChat(groupId, notificationText)){
+                if(!isSameWithLastTextInChat(groupId, notificationText)){
 
-                        NotifAction notifAction = new NotifAction();
+                    NotifAction notifAction = new NotifAction();
 
-                        if (notifAction.createID(packageName, notificationName).contains("com-google-android-apps-messaging")) {
+                    if (notifAction.createID(packageName, notificationName).contains("com-google-android-apps-messaging")) {
 
-                            for (LastDeletedMessage lsDeletedMessage :
-                                    lastDeletedMessageArrayList) {
-                                if (lsDeletedMessage.getNotificationID().equals(notifAction.createID(packageName, notificationName))
-                                        && lsDeletedMessage.getMessage().equals(notificationText)){
-                                    cancelNotification(sbn.getKey());
-                                    return;
-                                }
+                        for (LastDeletedMessage lsDeletedMessage :
+                                lastDeletedMessageArrayList) {
+                            if (lsDeletedMessage.getNotificationID().equals(notifAction.createID(packageName, notificationName))
+                                    && lsDeletedMessage.getMessage().equals(notificationText)){
+                                cancelNotification(sbn.getKey());
+                                return;
                             }
-
                         }
 
-                        myRef = database.getReference("users/" + currentUser.getUid() + "/notifications/" + groupId + "/" + uniqueId);
-                        myRef.child("message").setValue(notificationText);
-
-                        notifAction.setEntireObject(action, notificationName, notificationText, packageName, sbn.getKey(), timestamp.getTime());
-
-                        notifActionArrayList.add(notifAction);
-                        addListToHawk(notifActionArrayList);
                     }
 
+                    myRef = database.getReference("users/" + currentUser.getUid() + "/notifications/" + groupId + "/" + uniqueId);
+                    myRef.child("message").setValue(notificationText);
 
+                    notifAction.setEntireObject(action, notificationName, notificationText, packageName, sbn.getKey(), timestamp.getTime());
 
+                    notifActionArrayList.add(notifAction);
+                    addListToHawk(notifActionArrayList);
                 }
-            } catch (Exception e) {
-                System.out.println("Alex   ---: stackTrace");
-                e.printStackTrace();
+
+
+
             }
+        } catch (Exception e) {
+            System.out.println("Alex   ---: stackTrace");
+            e.printStackTrace();
         }
 
     }
@@ -319,7 +314,7 @@ public class NotificationService extends BaseNotificationListener {
         return false;
     }
 
-    ArrayList<LastDeletedMessage> lastDeletedMessageArrayList = new ArrayList<LastDeletedMessage>();
+    ArrayList<LastDeletedMessage> lastDeletedMessageArrayList = new ArrayList<>();
     private void getUpdates(){
         DatabaseReference myRefReplies, myRefRemove;
         try {
@@ -337,8 +332,6 @@ public class NotificationService extends BaseNotificationListener {
                         for (DataSnapshot d :
                                 dataSnapshot.getChildren()) {
 
-                            System.out.println("Alex   ---: d: " + d);
-
                             String key = d.getKey();
                             String value = (String) d.getValue();
 
@@ -347,7 +340,6 @@ public class NotificationService extends BaseNotificationListener {
                                 for (NotifAction notifAction :
                                         notifActionArrayList) {
 
-                                    // _TODO MAY NEED SOME FIXING ( perhaps from foreach d : dataSnapshot.getChildren() )
                                     if (notifAction.getNotificationID().equals(key)) {
 
                                         Action action = notifAction.getAction();
@@ -370,9 +362,10 @@ public class NotificationService extends BaseNotificationListener {
                                                     }
 
                                                     // due to deletion of an object from the list, we create a conflict.
+                                                    // we fix that error by breaking the loop after deletion
                                                     notifActionArrayList.remove(nA);
                                                     addListToHawk(notifActionArrayList);
-                                                    break; // we fix that error by breaking the loop after that deletion
+                                                    break;
                                                 }
                                             }
 
@@ -426,19 +419,14 @@ public class NotificationService extends BaseNotificationListener {
                         for (DataSnapshot d :
                                 dataSnapshot.getChildren()) {
 
-                            System.out.println("Alex   ---: d: " + d);
-
                             DatabaseReference myRef2 = database.getReference("users/" + currentUser.getUid() + "/remove");
 
                             String key = d.getKey();
-                            String value = (String) d.getValue();
-
-                            if (notifActionArrayList != null || notifActionArrayList.size() > 0){
+                            if (notifActionArrayList != null && notifActionArrayList.size() > 0){
 
                                 for (NotifAction notifAction :
                                         notifActionArrayList) {
 
-                                    // _TODO MAY NEED SOME FIXING ( perhaps from foreach d : dataSnapshot.getChildren() )
                                     if (notifAction.getNotificationID().equals(key)) {
 
                                         cancelNotification(notifAction.getSbnKey());
@@ -480,12 +468,8 @@ public class NotificationService extends BaseNotificationListener {
 
         String notificationName = sbn.getNotification().extras.getString("android.title");
         String packageName = sbn.getPackageName();
-        // String notificationText = sbn.getNotification().extras.getCharSequence("android.text").toString();
 
-        String key;//, keyPt2;
-        key = genGId(packageName, notificationName);
-
-
+        String key = genGId(packageName, notificationName);
         if (notifActionArrayList != null && notifActionArrayList.size() > 0){
             ArrayList<NotifAction> toRemoveList = new ArrayList<>();
             for (NotifAction not :
@@ -495,12 +479,8 @@ public class NotificationService extends BaseNotificationListener {
 
                     toRemoveList.add(not);
 
-
                     myRef = database.getReference("users/" + currentUser.getUid() + "/notifications");
-
                     myRef.child(key).removeValue();
-
-                    System.out.println("suppose it did it");
 
                 }
             }
@@ -509,12 +489,8 @@ public class NotificationService extends BaseNotificationListener {
                 notifActionArrayList.removeAll(toRemoveList);
                 addListToHawk(notifActionArrayList);
             }
-            System.out.println("alex   ---: testing for the size of the list: " + notifActionArrayList.size());
 
         }
-
-
-        System.out.println("out of loop");
 
         super.onNotificationRemoved(sbn);
     }
@@ -523,12 +499,12 @@ public class NotificationService extends BaseNotificationListener {
         return new NotifAction().createID(app, title);
     }
 
-
-    private void addListToHawk(ArrayList arrayList){
+    private void addListToHawk(ArrayList<NotifAction> arrayList){
         Hawk.put(HAWK_NOTIF_ACTION_ARRAY_LIST_KEY, arrayList);
     }
 
     private ArrayList<NotifAction> getListFromHawk(){
+
         if (Hawk.contains(HAWK_NOTIF_ACTION_ARRAY_LIST_KEY)){
 
             return Hawk.get(HAWK_NOTIF_ACTION_ARRAY_LIST_KEY);

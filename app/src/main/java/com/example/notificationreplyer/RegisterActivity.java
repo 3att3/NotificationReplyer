@@ -53,10 +53,12 @@ public class RegisterActivity extends AppCompatActivity {
         activity = this;
         mAuth = FirebaseAuth.getInstance();
         firebaseUser = mAuth.getCurrentUser();
+
         if (firebaseUser!= null) {
             startActivity(new Intent(getApplicationContext(),MainActivity.class));
             finish();
         }
+
         ref = FirebaseDatabase.getInstance().getReference("students");
         registerButton.setOnClickListener(view -> {
             username = editTextUsername.getText().toString().trim();
@@ -65,6 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
             pass2 = editTextPass2.getText().toString().trim();
 
             if (username.isEmpty() || email.isEmpty() || pass.isEmpty() || pass2.isEmpty()) {
+
                 if (username.isEmpty()) {
                     usernameLayout.setError("You have to type your Username");
                 }
@@ -77,18 +80,20 @@ public class RegisterActivity extends AppCompatActivity {
                 if (pass2.isEmpty()) {
                     pass2Layout.setError("You have to type your Password");
                 }
+
             } else {
+
                 if (!pass.equals(pass2)) {
+
                     pass2Layout.setError("Passwords don't match");
                     passLayout.setError("Passwords don't match");
+
                 } else {
+
                     mAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) { // Αν είναι successful μεταφορά στο HomeActivity
                             String uid = FirebaseAuth.getInstance().getUid();
                             if (uid != null) {
-                                // Δημιουργία νέου node στην βάση με τα στοιχεία του μαθητή
-                                /*ref.child(uid).child("Username").setValue(username);
-                                ref.child(uid).child("Email").setValue(email);*/
 
                                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                         .setDisplayName(username).build();
@@ -107,6 +112,7 @@ public class RegisterActivity extends AppCompatActivity {
                             }
 
                         } else {
+
                             try {
                                 throw task.getException();
                             } catch(FirebaseAuthUserCollisionException e) { // Εμφάνιση toast για διάφορα exceptions
@@ -119,8 +125,11 @@ public class RegisterActivity extends AppCompatActivity {
                                 StaticMethods.showMotionToast(activity,"Oops, problem!","Sign up failed, try again",MotionToast.TOAST_WARNING);
                                 System.out.println("alex   ---: error1: " + e);
                             }
+
                         }
+
                     }); // Έναρξη δημιουργίας του χρήστη στην firebase
+
                 }
             }
         });
@@ -205,7 +214,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)  {
         if (keyCode == KeyEvent.KEYCODE_BACK ) {
-            // do something on back.
+
             this.finishAffinity();
             return true;
         }

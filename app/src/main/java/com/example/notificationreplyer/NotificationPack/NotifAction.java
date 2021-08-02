@@ -13,21 +13,9 @@ public class NotifAction {
         return sbnKey;
     }
 
-    public void setSbnKey(String sbnKey) {
-        this.sbnKey = sbnKey;
-    }
 
     private String sbnKey;
     private long time;
-    private long nWhen;
-
-    public long getNWhen() {
-        return nWhen;
-    }
-
-    public void setNWhen(long nWhen) {
-        this.nWhen = nWhen;
-    }
 
     public String getApp() { return app; }
 
@@ -53,7 +41,7 @@ public class NotifAction {
         return message;
     }
 
-    public void setMessage(String message) { this.message = message; }
+    // public void setMessage(String message) { this.message = message; }
 
     public long getTime() {
         return time;
@@ -61,7 +49,7 @@ public class NotifAction {
 
     // public void setTime(long time) { this.time = time; }
 
-    public void setEntireObject(Action action, String title, String message, String app, String sbnKey, long time) { //action, message,
+    public void setEntireObject(Action action, String title, String message, String app, String sbnKey, long time) {
         this.action = action;
         this.title = title;
         this.message = message;
@@ -69,23 +57,11 @@ public class NotifAction {
         this.notificationID = createID(app, title);
         this.app = app;
         this.sbnKey = sbnKey;
-    }
-
-    // added the nWhen
-    public void setEntireObject(Action action, String title, String message, String app, String sbnKey, long nWhen, long time) { //action, message,
-        this.action = action;
-        this.title = title;
-        this.message = message;
-        this.time = time;
-        this.notificationID = createID(app, title);
-        this.app = app;
-        this.sbnKey = sbnKey;
-        this.nWhen = nWhen;
     }
 
     public String createID(String app, String value2){
         String gKey;
-        System.out.println("alex33   ---: value2: " + value2);
+
         if (value2.contains(":")){
             String[] splitStr = value2.split(":");
             gKey = app + "_" + splitStr[0];

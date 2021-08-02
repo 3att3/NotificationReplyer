@@ -42,7 +42,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         activity = this;
-        //startService(new Intent(this,MyService.class));
         mAuth = FirebaseAuth.getInstance();
         firebaseUser = mAuth.getCurrentUser();
         if (firebaseUser!= null) {
@@ -62,10 +61,10 @@ public class LoginActivity extends AppCompatActivity {
             pass = editTextPass.getText().toString().trim();
             if (email.isEmpty() || pass.isEmpty()) {
                 if (email.isEmpty()) {
-                    emailLayout.setError("Please type your Email");
+                    emailLayout.setError("Please enter your Email");
                 }
                 if (pass.isEmpty()) {
-                    passLayout.setError("Please type your Password");
+                    passLayout.setError("Please enter your Password");
                 }
             } else {
                 mAuth.signInWithEmailAndPassword(email, pass)
@@ -76,15 +75,15 @@ public class LoginActivity extends AppCompatActivity {
                             } else {
                                 try {
                                     throw task.getException();
-                                } catch(FirebaseAuthInvalidUserException e) { // Εμφάνιση toast για διάφορα exceptions
+                                } catch(FirebaseAuthInvalidUserException e) {
                                     StaticMethods.showMotionToast(activity,"Oops, problem!","Connection Issues.", MotionToast.TOAST_WARNING);
-                                    System.out.println("alex   ---: error1: " + e);
+                                    e.printStackTrace();
                                 } catch(FirebaseAuthInvalidCredentialsException e) {
                                     StaticMethods.showMotionToast(activity, "Oops, problem!","Wrong Email/Password.",MotionToast.TOAST_WARNING);
-                                    System.out.println("alex   ---: error1: " + e);
+                                    e.printStackTrace();
                                 } catch (Exception e) {
                                     StaticMethods.showMotionToast(activity,"Oops, problem!","Connection Issues.",MotionToast.TOAST_WARNING);
-                                    System.out.println("alex   ---: error1: " + e);
+                                    e.printStackTrace();
                                 }
                             }
                         });

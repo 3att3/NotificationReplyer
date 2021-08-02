@@ -15,10 +15,9 @@ public class ShPref extends AppCompatActivity{
 
     Context context;
 
-
     ShPref(Context context){
         this.context = context;
-        sharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, 0); // MODE_PRIVATE
+        sharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, 0);
         editor = sharedPreferences.edit();
     }
 
@@ -39,18 +38,5 @@ public class ShPref extends AppCompatActivity{
     public boolean getRunInBackground(){
         return sharedPreferences.getBoolean(RUN_IN_BACKGROUND_KEY, true);
     }
-
-
-    // remove afterwords
-    // ---------------------------------------- Other ------------------------------------------- //
-
-    public void setLessonNumber(int lessonNum){
-        editor.putInt("lessonNumber_", lessonNum);
-        editor.commit();
-    }
-    public int getLessonNumber(){
-        return sharedPreferences.getInt("lessonNumber_", -1);
-    }
-
 
 }

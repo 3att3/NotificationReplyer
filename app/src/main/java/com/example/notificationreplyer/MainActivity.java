@@ -82,12 +82,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        // On click listeners
+        // On click listeners //
 
         btnMdlMatProceed.setOnClickListener(v -> {
 
             if (btnMdlMatProceed.getText().toString().equals("Open Settings")){
-                // open settings instead from the three dots
+
                 shPref.setOpenFirstTime(true);
                 Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
                 startActivity(intent);
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnBottomMatOpenWeb.setOnClickListener(v -> {
-            String url = "https://filedn.com/l3kyrUktX1XpySaldrw7b28/"; // maybe add a website
+            String url = "https://filedn.com/l3kyrUktX1XpySaldrw7b28/";
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         });
 
@@ -155,8 +155,9 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+    
 
-    // show alert/s
+    // show alert/s //
 
     private void showInfoDialog(String title, String message){
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialogTheme);
