@@ -76,10 +76,7 @@ public class NotificationService extends BaseNotificationListener {
         public int i = 0;
         public void run()
         {
-            System.out.println("====================== periodic check (Helper) ======================");
-            System.out.println("Timer ran " + ++i);
             removeNoNActiveNotifications();
-
         }
     }
 

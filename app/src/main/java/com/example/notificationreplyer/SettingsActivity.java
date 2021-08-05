@@ -26,7 +26,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     Button settingsBtnDeleteAccount, settingsBtnLogOut, settingsBtnChNotAccess;
 
-    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    //@SuppressLint("UseSwitchCompatOrMaterialCode")
     //Switch settingsSwitchRunInBackground;
 
 
