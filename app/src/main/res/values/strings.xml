@@ -61,4 +61,8 @@
     <string name="Email___">Email:</string>
     <string name="Password___">Password:</string>
     <string name="Settings">Settings</string>
+    <string name="Some_companies_stop_app_for_running_in_the_background_after_a_period_of_time___eg___Samsung____">Some companies stop app for running in the background after a period of time (eg. Samsung).</string>
+    <string name="You_can_prevent_this_for_apps_you_choose_by_following_some_instructions_from_this_website__">You can prevent this for apps you choose by following some instructions from this website:</string>
+    <string name="https______dontkillmyapp__com__">https://dontkillmyapp.com/</string>
+    <string name="Show_me_how">Show me how</string>
 </resources>

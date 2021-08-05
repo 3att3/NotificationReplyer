@@ -114,7 +114,8 @@
                 <Button
                     android:id="@+id/btnMdlMatProceed"
                     android:layout_width="match_parent"
-                    android:layout_height="38dp"                    android:background="@drawable/button_neutral_right_corners_background"
+                    android:layout_height="38dp"
+                    android:background="@drawable/button_neutral_right_corners_background"
                     android:text="@string/Proceed" />
 
             </LinearLayout>

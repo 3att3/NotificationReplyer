@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -73,17 +74,24 @@ public class MainActivity extends AppCompatActivity {
             // show user first welcome message with extra data
             matCVMidl.dispatchWindowVisibilityChanged(View.VISIBLE);
             tvMdlMat1.setText(R.string.enableNotificationAccess);
+
             btnMdlMatBack.setVisibility(View.GONE);
             spaceMdlMatHorizontal1.setVisibility(View.GONE);
+
+            btnMdlMatProceed.setBackground(ContextCompat.getDrawable(this, R.drawable.button_neutral_background));
             btnMdlMatProceed.setText(getResources().getString(R.string.Proceed));
         }
         else{
-            matCVMidl.setVisibility(View.INVISIBLE);
+            //matCVMidl.setVisibility(View.INVISIBLE);
+            setDataOfMdlLayout();
         }
 
 
         // On click listeners //
 
+        // Proceed -> first
+        // Open Settings -> second
+        // Show me how -> last
         btnMdlMatProceed.setOnClickListener(v -> {
 
             if (btnMdlMatProceed.getText().toString().equals(getResources().getString(R.string.OpenSettings))){
@@ -91,27 +99,45 @@ public class MainActivity extends AppCompatActivity {
                 shPref.setOpenFirstTime(true);
                 Intent intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
                 startActivity(intent);
-                matCVMidl.setVisibility(View.INVISIBLE);
-            }else {
+
+                //matCVMidl.setVisibility(View.INVISIBLE);
+                setDataOfMdlLayout();
+            }
+            else if (btnMdlMatProceed.getText().toString().equals(getResources().getString(R.string.Show_me_how))){
+
+                String url = "https://dontkillmyapp.com/";
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+
+            }
+            else {
+
                 tvMdlMat1.setText(R.string.enableNotificationAccessInstractions);
                 btnMdlMatBack.setVisibility(View.VISIBLE);
                 spaceMdlMatHorizontal1.setVisibility(View.VISIBLE);
+
                 btnMdlMatProceed.setText(getResources().getString(R.string.OpenSettings));
+                btnMdlMatProceed.setBackground(ContextCompat.getDrawable(this, R.drawable.button_neutral_right_corners_background));
+
             }
 
         });
 
         btnMdlMatBack.setOnClickListener(v -> {
+
             matCVMidl.dispatchWindowVisibilityChanged(View.VISIBLE);
             tvMdlMat1.setText(R.string.enableNotificationAccess);
             btnMdlMatBack.setVisibility(View.GONE);
             spaceMdlMatHorizontal1.setVisibility(View.GONE);
             btnMdlMatProceed.setText(getResources().getString(R.string.Proceed));
+            btnMdlMatProceed.setBackground(ContextCompat.getDrawable(this, R.drawable.button_neutral_background));
+
         });
 
         btnBottomMatOpenWeb.setOnClickListener(v -> {
+
             String url = "https://filedn.com/l3kyrUktX1XpySaldrw7b28/";
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+
         });
 
         ivOpenWebArea.setOnClickListener(v -> showInfoDialog(getResources().getString(R.string.Windows_App),
@@ -120,6 +146,27 @@ public class MainActivity extends AppCompatActivity {
                         getResources().getString(R.string.OpenWebsite) +"\""));
 
     }
+
+
+    @SuppressLint("SetTextI18n")
+    private void setDataOfMdlLayout(){
+
+        tvMdlMat1.setText(getResources().getString(R.string.Some_companies_stop_app_for_running_in_the_background_after_a_period_of_time___eg___Samsung____) +
+                "\n\n"
+                +getResources().getString(R.string.You_can_prevent_this_for_apps_you_choose_by_following_some_instructions_from_this_website__)
+                +"\n\n"
+                +getResources().getString(R.string.https______dontkillmyapp__com__)
+                +"\n ");
+
+        spaceMdlMatHorizontal1.setVisibility(View.GONE);
+
+        btnMdlMatBack.setVisibility(View.GONE);
+
+        btnMdlMatProceed.setText(getResources().getString(R.string.Show_me_how));
+        btnMdlMatProceed.setBackground(ContextCompat.getDrawable(this, R.drawable.button_neutral_background));
+
+    }
+
 
     @Override
     public void onStart() {
@@ -136,10 +183,12 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     private void updateUI(FirebaseUser firebaseUser){
+
         if (firebaseUser != null){
             //getUpdates();
             tvMainWelcome.setText(getResources().getString(R.string.welcome_) + " " + firebaseUser.getDisplayName() + "!");
         }
+
     }
 
     @Override
@@ -149,11 +198,15 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected (MenuItem item) {
+
         if (item.getItemId() == R.id.action_settings) {
+
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
+
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
     
@@ -161,12 +214,14 @@ public class MainActivity extends AppCompatActivity {
     // show alert/s //
 
     private void showInfoDialog(String title, String message){
+
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialogTheme);
         View view = LayoutInflater.from(MainActivity.this).inflate(
                 R.layout.layout_info_dialog,
                 (ConstraintLayout) findViewById(R.id.layoutDialogContainer)
         );
         builder.setView(view);
+
         ((TextView) view.findViewById(R.id.textTitle)).setText(title); //or  .getResources().getString(R.string....)
         ((TextView) view.findViewById(R.id.textMessage)).setText(message);
         ((Button) view.findViewById(R.id.buttonAction)).setText(getResources().getString(R.string.ok));
