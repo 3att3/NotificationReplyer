@@ -31,7 +31,7 @@ public class NotificationService extends BaseNotificationListener {
     private Context context;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-    private ArrayList<NotifAction> notifActionArrayList = new ArrayList();
+    private ArrayList<NotifAction> notifActionArrayList = new ArrayList<>();
     private final String HAWK_NOTIF_ACTION_ARRAY_LIST_KEY = "hawkNotifActionArrayList";
 
     private boolean isFirebaseListener = false;
@@ -66,7 +66,7 @@ public class NotificationService extends BaseNotificationListener {
         Timer timer = new Timer();
         TimerTask task = new Helper();
 
-        timer.schedule(task, 2000, 60000); // 10 min // cur is 1 min. add one "0" to become 10 min.
+        timer.schedule(task, 2000, 60000); // 1 min
     }
 
 
@@ -83,6 +83,7 @@ public class NotificationService extends BaseNotificationListener {
     // Check for active notifications in the status bar and remove the rest from the notifActionArrayList and from the firebase
     public void removeNoNActiveNotifications() {
         try {
+            // it throws an error when user doesn't give notification access to the app.
             StatusBarNotification[] activeNos =  getActiveNotifications();
 
             if (currentUser == null){
@@ -212,6 +213,7 @@ public class NotificationService extends BaseNotificationListener {
                 timestamp = new Timestamp(System.currentTimeMillis());
 
 
+                // Create unique ID for each notification (each time something is been sent)
                 String groupId = genGId(packageName, notificationName);
                 String uniqueId;
                 if (notificationName.contains(":")){
@@ -221,10 +223,12 @@ public class NotificationService extends BaseNotificationListener {
                     uniqueId = String.valueOf(timestamp.getTime());
                 }
 
+                // check if for some reason the same notification triggered the listener twice
                 if(!isSameWithLastTextInChat(groupId, notificationText)){
 
                     NotifAction notifAction = new NotifAction();
 
+                    // "com-google-android-apps-messaging" resends the notification after replying. In notification bar you can see the notification with the users reply
                     if (notifAction.createID(packageName, notificationName).contains("com-google-android-apps-messaging")) {
 
                         for (LastDeletedMessage lsDeletedMessage :
@@ -312,8 +316,9 @@ public class NotificationService extends BaseNotificationListener {
         return false;
     }
 
-    ArrayList<LastDeletedMessage> lastDeletedMessageArrayList = new ArrayList<>();
+    
     // enable listeners from the realtimeBD firebase
+    ArrayList<LastDeletedMessage> lastDeletedMessageArrayList = new ArrayList<>();
     private void getUpdates(){
 
         DatabaseReference myRefReplies, myRefRemove;
@@ -379,7 +384,7 @@ public class NotificationService extends BaseNotificationListener {
                                             // Delete all notification messages with the same id and older than the replyable one
                                             for (int i=notifActionArrayList.size()-1; i > -1; i--){
                                                 if (notifActionArrayList.get(i).getNotificationID().equals(key)
-                                                && notifActionArrayList.get(i).getTime() < notifAction.getTime()){
+                                                        && notifActionArrayList.get(i).getTime() < notifAction.getTime()){
                                                     notifActionArrayList.remove(i);
                                                     addListToHawk(notifActionArrayList);
                                                 }

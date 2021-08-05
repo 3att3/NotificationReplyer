@@ -4,7 +4,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,10 +24,6 @@ public class SettingsActivity extends AppCompatActivity {
 
     Button settingsBtnDeleteAccount, settingsBtnLogOut, settingsBtnChNotAccess;
 
-    //@SuppressLint("UseSwitchCompatOrMaterialCode")
-    //Switch settingsSwitchRunInBackground;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,14 +33,6 @@ public class SettingsActivity extends AppCompatActivity {
         settingsBtnDeleteAccount = findViewById(R.id.settingsBtnDeleteAccount);
         settingsBtnLogOut = findViewById(R.id.settingsBtnLogOut);
         settingsBtnChNotAccess = findViewById(R.id.settingsBtnChNotAccess);
-
-        //settingsSwitchRunInBackground = findViewById(R.id.settingsSwitchRunInBackground);
-
-
-        /*ShPref shPref = new ShPref(this);
-        settingsSwitchRunInBackground.setChecked(shPref.getRunInBackground());*/
-
-
 
         // On click //
 
@@ -75,9 +61,6 @@ public class SettingsActivity extends AppCompatActivity {
 
         });
 
-       /* settingsSwitchRunInBackground.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            shPref.setRunInBackground(isChecked);
-        });*/
     }
 
 
