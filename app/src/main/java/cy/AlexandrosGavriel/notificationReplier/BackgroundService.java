@@ -1,4 +1,4 @@
-package com.example.notificationreplyer;
+package cy.AlexandrosGavriel.notificationReplier;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -12,6 +12,8 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
+import cy.AlexandrosGavriel.notificationReplier.R;
 
 public class BackgroundService extends Service {
 

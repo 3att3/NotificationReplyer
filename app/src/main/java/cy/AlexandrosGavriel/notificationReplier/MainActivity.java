@@ -1,4 +1,4 @@
-package com.example.notificationreplyer;
+package cy.AlexandrosGavriel.notificationReplier;
 
 import android.annotation.SuppressLint;
 
@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
+import cy.AlexandrosGavriel.notificationReplier.R;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

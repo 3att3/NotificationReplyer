@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.notificationreplyer">
+    package="cy.AlexandrosGavriel.notificationReplier">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -9,20 +9,20 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        android:name=".App"
+        android:name="cy.AlexandrosGavriel.notificationReplier.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NotificationReplier">
-        <activity android:name=".SettingsActivity"
-            android:parentActivityName=".MainActivity" />
+        <activity android:name="cy.AlexandrosGavriel.notificationReplier.SettingsActivity"
+            android:parentActivityName="cy.AlexandrosGavriel.notificationReplier.MainActivity" />
         <activity
-            android:name=".LoginActivity"
-            android:parentActivityName=".RegisterActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".RegisterActivity">
+            android:name="cy.AlexandrosGavriel.notificationReplier.LoginActivity"
+            android:parentActivityName="cy.AlexandrosGavriel.notificationReplier.RegisterActivity" />
+        <activity android:name="cy.AlexandrosGavriel.notificationReplier.MainActivity" />
+        <activity android:name="cy.AlexandrosGavriel.notificationReplier.RegisterActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".BootCompletedReceiver" >
+        <receiver android:name="cy.AlexandrosGavriel.notificationReplier.BootCompletedReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
@@ -38,14 +38,14 @@
         </receiver>
 
         <service
-            android:name=".NotificationPack.NotificationService"
+            android:name="cy.AlexandrosGavriel.notificationReplier.NotificationPack.NotificationService"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
-        <service android:name=".BackgroundService" />
+        <service android:name="cy.AlexandrosGavriel.notificationReplier.BackgroundService" />
     </application>
 
 </manifest>

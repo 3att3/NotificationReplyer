@@ -1,4 +1,4 @@
-package com.example.notificationreplyer;
+package cy.AlexandrosGavriel.notificationReplier;
 
 import org.junit.Test;
 

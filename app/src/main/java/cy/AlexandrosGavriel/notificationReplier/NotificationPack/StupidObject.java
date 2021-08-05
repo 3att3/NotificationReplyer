@@ -1,4 +1,4 @@
-package com.example.notificationreplyer.NotificationPack;
+package cy.AlexandrosGavriel.notificationReplier.NotificationPack;
 
 import java.util.ArrayList;
 

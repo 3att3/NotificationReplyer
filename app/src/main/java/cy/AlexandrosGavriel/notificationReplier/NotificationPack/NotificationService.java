@@ -1,4 +1,4 @@
-package com.example.notificationreplyer.NotificationPack;
+package cy.AlexandrosGavriel.notificationReplier.NotificationPack;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
-import com.example.notificationreplyer.R;
+import cy.AlexandrosGavriel.notificationReplier.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -348,10 +348,10 @@ public class NotificationService extends BaseNotificationListener {
 
                                     if (notifAction.getNotificationID().equals(key)) {
 
-                                        Action action = notifAction.getAction();
 
                                         try {
 
+                                            Action action = notifAction.getAction();
                                             action.sendReply(context, value);
 
                                             DatabaseReference myRef;

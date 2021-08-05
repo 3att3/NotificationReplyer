@@ -1,8 +1,10 @@
-package com.example.notificationreplyer;
+package cy.AlexandrosGavriel.notificationReplier;
 
 import android.app.Activity;
 
 import androidx.core.content.res.ResourcesCompat;
+
+import cy.AlexandrosGavriel.notificationReplier.R;
 
 import www.sanju.motiontoast.MotionToast;
 
@@ -14,7 +16,7 @@ public class StaticMethods {
                 type,
                 MotionToast.GRAVITY_BOTTOM,
                 MotionToast.LONG_DURATION,
-                ResourcesCompat.getFont(activity.getApplicationContext(),R.font.helvetica_regular));
+                ResourcesCompat.getFont(activity.getApplicationContext(), R.font.helvetica_regular));
     }
 
 }
