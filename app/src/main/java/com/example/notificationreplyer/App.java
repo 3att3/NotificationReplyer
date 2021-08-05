@@ -9,6 +9,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        startService(new Intent(this, YourService.class));
+        startService(new Intent(this, BackgroundService.class));
     }
 }

@@ -13,7 +13,7 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-public class YourService extends Service {
+public class BackgroundService extends Service {
 
     private static final int NOTIFICATION_ID = 24211;
     private static final String NOTIFICATION_CHANNEL_ID = "10001";
