@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import cy.AlexandrosGavriel.notificationReplier.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -15,7 +17,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.orhanobut.hawk.Hawk;
 import com.robj.notificationhelperlibrary.utils.NotificationUtils;
 
 import java.sql.Timestamp;
@@ -32,7 +33,6 @@ public class NotificationService extends BaseNotificationListener {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private ArrayList<NotifAction> notifActionArrayList = new ArrayList<>();
-    private final String HAWK_NOTIF_ACTION_ARRAY_LIST_KEY = "hawkNotifActionArrayList";
 
     private boolean isFirebaseListener = false;
 
@@ -45,10 +45,9 @@ public class NotificationService extends BaseNotificationListener {
         super.onCreate();
 
         context = getApplicationContext();
-        Hawk.init(context).build();
 
         if (notifActionArrayList.isEmpty()){
-            notifActionArrayList = getListFromHawk();
+            onStartFix();
         }
 
 
@@ -69,6 +68,84 @@ public class NotificationService extends BaseNotificationListener {
         timer.schedule(task, 2000, 60000); // 1 min
     }
 
+    // adds into list active replyable notifications that are not in it ( that's all)
+    private void onStartFix(){
+
+        try {
+            if (currentUser == null){
+                if (mAuth == null){
+                    mAuth = FirebaseAuth.getInstance();
+                }
+                currentUser = mAuth.getCurrentUser();
+            }
+
+            if (currentUser.getUid() != null){
+
+                try {
+
+                    StatusBarNotification[] activeNos =  getActiveNotifications();
+                    for (StatusBarNotification sbn :
+                            activeNos) {
+
+                        // sometimes there is no message on some notifications (usually you cant reply to them too)
+                        // so an extra try catch is added inside foreach loop to keep the check for the rest of the notifications
+                        try {
+
+                            String packageName = sbn.getPackageName(); // eg: org.telegram.messenger
+                            Notification notification = sbn.getNotification();
+
+                            Bundle extras = notification.extras;
+                            String title = extras.getString("android.title");
+                            String message = extras.getCharSequence("android.text").toString();
+                            String sbnGroupID = genGId(packageName, title);
+
+                            boolean isInNaList = false;
+                            for (NotifAction na :
+                                    notifActionArrayList) {
+                                if (na.getNotificationID().equals(sbnGroupID)){
+                                    isInNaList = true;
+                                    break;
+                                }
+                            }
+
+                            if (!isInNaList){
+                                try {
+                                    Action action = notificationUtils.getQuickReplyAction(notification, packageName);
+
+                                    //return number of milliseconds since January 1, 1970, 00:00:00 GMT
+                                    timestamp = new Timestamp(System.currentTimeMillis());
+
+                                    if(action.isQuickReply()){
+                                        NotifAction naAdd = new NotifAction();
+                                        naAdd.setEntireObject(action, title, message, packageName,sbn.getKey(), timestamp.getTime());
+                                        notifActionArrayList.add(naAdd);
+                                    }
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                            }
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+
+
+                    }
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+    }
 
 
     // Periodically "ask" for check for active notifications and remove the rest from notifActionArrayList
@@ -82,6 +159,7 @@ public class NotificationService extends BaseNotificationListener {
 
     // Check for active notifications in the status bar and remove the rest from the notifActionArrayList and from the firebase
     public void removeNoNActiveNotifications() {
+        onStartFix(); // recall here to avoid notification on windows that user interacted with notification from phone
         try {
             // it throws an error when user doesn't give notification access to the app.
             StatusBarNotification[] activeNos =  getActiveNotifications();
@@ -153,9 +231,6 @@ public class NotificationService extends BaseNotificationListener {
                     myRef.child("remove").removeValue();
                     myRef.child("reply").removeValue();
                 }
-
-                // Update hawk: notifActionArrayList backup.
-                addListToHawk(notifActionArrayList);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -250,7 +325,6 @@ public class NotificationService extends BaseNotificationListener {
                     notifAction.setEntireObject(action, notificationName, notificationText, packageName, sbn.getKey(), timestamp.getTime());
                     notifActionArrayList.add(notifAction);
 
-                    addListToHawk(notifActionArrayList);
                 }
 
 
@@ -370,7 +444,6 @@ public class NotificationService extends BaseNotificationListener {
                                                     // due to deletion of an object from the list, we create a conflict.
                                                     // we fix that error by breaking the loop after deletion
                                                     notifActionArrayList.remove(nA);
-                                                    addListToHawk(notifActionArrayList);
                                                     break;
                                                 }
                                             }
@@ -386,7 +459,6 @@ public class NotificationService extends BaseNotificationListener {
                                                 if (notifActionArrayList.get(i).getNotificationID().equals(key)
                                                         && notifActionArrayList.get(i).getTime() < notifAction.getTime()){
                                                     notifActionArrayList.remove(i);
-                                                    addListToHawk(notifActionArrayList);
                                                 }
                                             }
 
@@ -492,7 +564,6 @@ public class NotificationService extends BaseNotificationListener {
 
             if (toRemoveList != null && toRemoveList.size() > 0) {
                 notifActionArrayList.removeAll(toRemoveList);
-                addListToHawk(notifActionArrayList);
             }
 
         }
@@ -506,21 +577,4 @@ public class NotificationService extends BaseNotificationListener {
         return new NotifAction().createID(app, title);
     }
 
-    // Hawk is a more advance Shared Preferences
-    // Adds the NotifActionArrayList to the Hawk.
-    private void addListToHawk(ArrayList<NotifAction> arrayList){
-        Hawk.put(HAWK_NOTIF_ACTION_ARRAY_LIST_KEY, arrayList);
-    }
-
-    // Get the NotifActionArrayList from the Hawk, if it doesn't exists it returns an empty ArrayList
-    private ArrayList<NotifAction> getListFromHawk(){
-
-        if (Hawk.contains(HAWK_NOTIF_ACTION_ARRAY_LIST_KEY)){
-
-            return Hawk.get(HAWK_NOTIF_ACTION_ARRAY_LIST_KEY);
-        }
-        else {
-            return new ArrayList<NotifAction>();
-        }
-    }
 }
