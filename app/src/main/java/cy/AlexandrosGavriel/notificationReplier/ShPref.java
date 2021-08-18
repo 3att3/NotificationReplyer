@@ -1,5 +1,6 @@
 package cy.AlexandrosGavriel.notificationReplier;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -10,11 +11,13 @@ public class ShPref extends AppCompatActivity{
     private final String SHARED_PREF_NAME = "thisIsASharedPreferenceName",
             OPEN_FIRST_TIME_KEY = "openFirstTimeKey",
             RUN_IN_BACKGROUND_KEY = "runInBackgroundKey";
+
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
     Context context;
 
+    @SuppressLint("CommitPrefEdits")
     ShPref(Context context){
         this.context = context;
         sharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, 0);

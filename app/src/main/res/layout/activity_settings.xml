@@ -35,13 +35,16 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0" />
 
                 <TextView
                     android:id="@+id/settingsTVChNotAccess"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="  Change Notification Access" />
+                    android:text="@string/Change_notification_access" />
 
                 <Space
                     android:layout_width="8dp"
@@ -73,13 +76,17 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
+                <Space
+                    android:layout_width="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0" />
 
-                <!--<TextView
+                <TextView
                     android:id="@+id/settingsTVRunInBackground"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="  Keep app in background" />
+
+                    android:text="@string/Run_in_background" />
 
                 <Space
                     android:layout_width="8dp"
@@ -93,7 +100,7 @@
                     android:layout_weight="1"
                     android:paddingEnd="4dp"
                     tools:ignore="UseSwitchCompatOrMaterialXml"
-                    android:theme="@style/SCBSwitch"/>-->
+                    android:theme="@style/SCBSwitch"/>
 
             </LinearLayout>
 

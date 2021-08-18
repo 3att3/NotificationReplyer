@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -12,10 +13,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import cy.AlexandrosGavriel.notificationReplier.R;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,6 +25,10 @@ import com.google.firebase.auth.FirebaseUser;
 public class SettingsActivity extends AppCompatActivity {
 
     Button settingsBtnDeleteAccount, settingsBtnLogOut, settingsBtnChNotAccess;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    Switch settingsSwitchRunInBackground;
+
+    ShPref shPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +40,15 @@ public class SettingsActivity extends AppCompatActivity {
         settingsBtnLogOut = findViewById(R.id.settingsBtnLogOut);
         settingsBtnChNotAccess = findViewById(R.id.settingsBtnChNotAccess);
 
-        // On click //
+
+        shPref = new ShPref(getApplicationContext());
+        settingsSwitchRunInBackground = findViewById(R.id.settingsSwitchRunInBackground);
+        if (shPref.getRunInBackground()){
+            settingsSwitchRunInBackground.setChecked(true);
+        }
+
+
+        // On click listeners //
 
         settingsBtnChNotAccess.setOnClickListener(v -> {
 
@@ -62,8 +75,20 @@ public class SettingsActivity extends AppCompatActivity {
 
         });
 
+        settingsSwitchRunInBackground.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+            shPref.setRunInBackground(isChecked);
+
+            // restart application by crushing it
+            crushTheApp();
+        });
+
     }
 
+    public void crushTheApp() {
+        this.crushTheApp();
+
+    }
 
     private void showWarningDialog(String title, String message){
         AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this, R.style.AlertDialogTheme);

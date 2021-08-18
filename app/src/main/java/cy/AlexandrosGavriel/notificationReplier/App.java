@@ -9,6 +9,11 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        startService(new Intent(this, BackgroundService.class));
+        ShPref shPref = new ShPref(getApplicationContext());
+
+
+        if (shPref.getRunInBackground()){
+            startService(new Intent(this, BackgroundService.class));
+        }
     }
 }
