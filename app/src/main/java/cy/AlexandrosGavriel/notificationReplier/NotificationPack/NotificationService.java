@@ -21,6 +21,8 @@ import com.robj.notificationhelperlibrary.utils.NotificationUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -304,6 +306,7 @@ public class NotificationService extends BaseNotificationListener {
                     NotifAction notifAction = new NotifAction();
 
                     // "com-google-android-apps-messaging" resends the notification after replying. In notification bar you can see the notification with the users reply
+                    // this app uses the keyword "You" instead of "Me"
                     if (notifAction.createID(packageName, notificationName).contains("com-google-android-apps-messaging")) {
 
                         for (LastDeletedMessage lsDeletedMessage :
@@ -315,6 +318,17 @@ public class NotificationService extends BaseNotificationListener {
                             }
                         }
 
+                    }
+
+                    // the list of those apps are using a feature of android notifications called history
+                    // where it resets the notification and adding any new messages including the users reply ( Me: users Reply )
+                    // if the last message is from the user ( "Me" ), the notification is removed so the user wont be notified by his/hers replies.
+                    List<String> appsWithHistoryInNotifications = Arrays.asList("com-viber-voip", "com-samsung-android-messaging");
+                    if (appsWithHistoryInNotifications.stream().anyMatch(notifAction.createID(packageName, notificationName)::contains)){
+                        if (notificationName.contains("Me")){
+                            cancelNotification(sbn.getKey());
+                            return;
+                        }
                     }
 
                     // add to firebase
